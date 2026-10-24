@@ -1,0 +1,1333 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>捡手机模拟器 · 正洙与智硕</title>
+<style>
+:root{--bg:#e9ecf2;--fg:#1b2030;--frame:#10131a;--acc:#fee500;--ink:#15171c;--sb:#111}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+button{border:0;background:none;font:inherit;cursor:pointer;color:inherit}
+.frame{height:100%;max-height:880px;aspect-ratio:9/19;background:var(--frame);border-radius:46px;padding:8px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+@media(max-width:520px){.frame{border-radius:0;padding:0;width:100%;height:100%;max-height:none}}
+.phone{position:relative;width:100%;height:100%;background:#fff;color:var(--ink);border-radius:38px;overflow:hidden;display:flex;flex-direction:column;transition:background .3s}
+@media(max-width:520px){.phone{border-radius:0}}
+.phone[data-sb=light]{--sb:#fff}
+.phone[data-sb=dark]{--sb:#111}
+#sb{position:absolute;top:0;left:0;right:0;height:46px;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:6px 28px 0;color:var(--sb);font-weight:600;font-size:15px;pointer-events:none;transition:color .3s}
+.isl{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:98px;height:28px;background:#000;border-radius:20px;z-index:31;pointer-events:none}
+#scr{position:absolute;inset:0;display:flex;flex-direction:column;padding-top:46px;z-index:1;overflow:hidden}
+.bar-home{position:absolute;bottom:0;left:0;right:0;height:34px;z-index:999;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;cursor:pointer}
+.bar-home i{width:36%;height:5px;border-radius:3px;background:var(--sb);opacity:.85;transition:background .3s}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
+.gb{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1;font-size:40px;position:relative}
+#toast{position:absolute;left:50%;bottom:70px;transform:translate(-50%,12px);background:rgba(0,0,0,.85);color:#fff;font-size:13px;padding:10px 16px;border-radius:16px;opacity:0;pointer-events:none;transition:.3s;z-index:200;text-align:center;max-width:80%}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;min-height:44px;flex:none}
+.nav b{flex:1;text-align:center;font-size:16px}
+.bk{color:#0a7aff;cursor:pointer;font-size:16px;white-space:nowrap;padding:8px 4px;margin:-8px -4px}
+.rt{min-width:52px;text-align:right;font-size:14px}
+.pbody{flex:1;overflow-y:auto;padding:4px 16px 40px;-webkit-overflow-scrolling:touch}
+h1{font-size:30px;font-weight:700;margin:8px 0 12px}
+.lockwp,.homewp{position:absolute;inset:0;background:radial-gradient(circle at 20% 18%,rgba(255,196,130,.55),transparent 7%),radial-gradient(circle at 76% 34%,rgba(255,170,120,.4),transparent 9%),radial-gradient(circle at 52% 72%,rgba(255,215,150,.35),transparent 8%),radial-gradient(circle at 85% 80%,rgba(200,150,255,.25),transparent 12%),radial-gradient(circle at 15% 80%,rgba(120,150,255,.25),transparent 12%),#0a0612;background-size:100% 100%}
+.lk{position:absolute;inset:0;padding-top:96px;display:flex;flex-direction:column;align-items:center;color:#fff;z-index:2}
+.lkd{font-size:19px;font-weight:600}
+.lkt{font-size:104px;font-weight:700;line-height:1;margin-top:4px;letter-spacing:-3px}
+.lklang{margin-top:18px;padding:8px 18px;background:rgba(255,255,255,.14);border-radius:20px;font-size:15px;backdrop-filter:blur(8px)}
+.notis{margin-top:auto;width:100%;padding:0 14px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.noti{display:flex;gap:10px;align-items:center;background:rgba(140,135,150,.62);backdrop-filter:blur(14px);border-radius:24px;padding:12px 16px;cursor:pointer}
+.ni{width:38px;height:38px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;font-size:20px}
+.nb{flex:1;min-width:0;display:flex;flex-direction:column;color:#fff}
+.nb b{font-size:16px}
+.nb span{font-size:15px;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lkb{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 38px 54px;position:relative;z-index:10}
+.lkbtn{width:50px;height:50px;border-radius:50%;background:rgba(20,20,25,.6);display:flex;align-items:center;justify-content:center;font-size:20px}
+.swipe{color:rgba(255,255,255,.7);font-size:15px;cursor:pointer;padding:12px;width:100%;text-align:center}
+.pinw{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:96px;color:#fff;z-index:2}
+.pt{font-size:20px;font-weight:600;margin-bottom:4px}
+.dots{display:flex;gap:18px;margin-top:22px}
+.dots i{width:14px;height:14px;border-radius:50%;border:1.5px solid #fff}
+.dots i.f{background:#fff}
+.dots.shake{animation:sh .5s}
+@keyframes sh{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.pmsg{height:22px;margin-top:12px;font-size:14px;color:#ffb4b4;text-align:center}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px 22px;margin-top:20px}
+.pad button{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.16);font-size:30px;color:#fff;display:flex;align-items:center;justify-content:center}
+.pad .gh{background:none;pointer-events:none}
+.pcancel{margin-top:auto;margin-bottom:46px;font-size:16px;cursor:pointer;color:#fff}
+.hm{position:absolute;inset:0;padding:58px 16px 22px;display:flex;flex-direction:column;z-index:2;color:#fff}
+.wid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.w{border-radius:26px;padding:16px;aspect-ratio:1;position:relative}
+.w1{background:#fff;color:#111}
+.w1 .r{color:#ff3b30;font-size:15px;font-weight:600}
+.w1 .big{font-size:50px;font-weight:300;line-height:1}
+.we{display:flex;gap:7px;margin-top:8px}
+.we i{width:3px;border-radius:2px;background:#af52de;flex:none}
+.we b{font-size:13px;display:block;line-height:1.2}
+.we span{font-size:11px;color:#888}
+.w2{background:linear-gradient(#2f87e6,#58a6ef)}
+.w2 b{font-size:15px;display:block;margin-top:12px}
+.w2 .big{font-size:50px;font-weight:300;line-height:1.1}
+.w2 p{font-size:13px;margin:4px 0 0;font-weight:600;line-height:1.4}
+.sun{position:absolute;right:14px;top:14px;font-size:30px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;margin-top:22px}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.app p{margin:0;font-size:12px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.ic{width:62px;height:62px;border-radius:15px;display:flex;align-items:center;justify-content:center;position:relative;font-size:30px;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.calic{display:flex;flex-direction:column;align-items:center;color:#111}
+.calic small{color:#ff3b30;font-size:10px;font-weight:700;letter-spacing:.5px}
+.calic b{font-size:30px;font-weight:300;line-height:1}
+.bd{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;border-radius:11px;background:#ff3b30;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 5px;z-index:2;font-style:normal}
+.dock{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(110,100,115,.5);backdrop-filter:blur(16px);border-radius:32px;padding:14px 10px;margin-top:auto}
+.dock .ic{width:56px;height:56px;font-size:28px}
+.srch{margin:16px auto 0;background:rgba(255,255,255,.22);border-radius:18px;padding:7px 18px;font-size:13px;backdrop-filter:blur(10px);width:fit-content}
+/* Kakao */
+.phone.kk{background:#b2c7da}
+.knav{display:flex;padding:6px 14px;min-height:34px;align-items:center}
+.knav .bk{color:#2a3a4a}
+.khead{display:flex;justify-content:space-between;align-items:center;padding:6px 18px 10px;font-size:24px;font-weight:700;flex:none}
+.clist{flex:1;overflow-y:auto;min-height:0}
+.cr{display:flex;gap:12px;padding:10px 18px;cursor:pointer;align-items:center}
+.cr:active{background:rgba(0,0,0,.04)}
+.cm{flex:1;min-width:0}
+.ct{display:flex;gap:6px;align-items:baseline}
+.ct b{font-size:16px}
+.ct em{font-style:normal;color:#aab0bb;font-size:13px}
+.ct span{margin-left:auto;font-size:12px;color:#aab0bb;flex:none}
+.cp{display:flex;align-items:center;gap:8px;margin-top:3px;color:#8c93a0;font-size:14px}
+.cp span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.un{font-style:normal;background:#ff5a36;color:#fff;font-size:12px;min-width:22px;height:22px;border-radius:11px;display:flex;align-items:center;justify-content:center;padding:0 6px;flex:none}
+.ktab{display:flex;justify-content:space-around;padding:8px 0 28px;font-size:19px;color:#7a8a9a;background:#b2c7da;flex:none;border-top:1px solid rgba(0,0,0,.06)}
+.ktab span{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.ktab small{font-size:10px}
+.ktab .on{color:#2a3a4a}
+/* chat */
+.phone.kc{background:#b2c7da}
+.chd{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-size:16px;background:#b2c7da;flex:none;gap:8px}
+.chd b{font-size:16px;display:flex;gap:5px;align-items:baseline;flex:1;justify-content:center}
+.chd b em{font-style:normal;font-size:12px;color:#5a6b7a}
+.msgs{flex:1;overflow-y:auto;padding:6px 12px 14px;background:#b2c7da;min-height:0;cursor:pointer;-webkit-overflow-scrolling:touch}
+.dsep{margin:14px auto;width:fit-content;font-size:12px;color:#fff;background:rgba(80,100,125,.35);padding:5px 14px;border-radius:14px}
+.mr{display:flex;gap:7px;margin-top:6px;align-items:flex-start}
+.mr.r{justify-content:flex-end;align-items:flex-end}
+.mc{display:flex;flex-direction:column;max-width:72%}
+.mn{font-size:12px;color:#3d4d5e;margin:2px 0 3px 2px}
+.mrow{display:flex;align-items:flex-end;gap:5px}
+.bub{background:#fff;padding:9px 12px;border-radius:14px;font-size:15px;line-height:1.38;word-break:break-word;white-space:pre-wrap}
+.bub.me{background:#fee500;border-top-right-radius:4px}
+.mr.l .bub{border-top-left-radius:4px}
+.bub.del{background:rgba(255,255,255,.55);color:#6d7886;font-style:italic;font-size:14px}
+.bub.imgb{padding:8px;width:200px}
+.bub.imgb .gb{border-radius:10px;aspect-ratio:4/3}
+.bub.imgb p{margin:7px 2px 0;font-size:14px}
+.stk{text-align:center}
+.stk div{font-size:48px;line-height:1.1}
+.stk small{font-size:12px;color:#44566a}
+.tm{font-size:11px;color:#46586b;flex:none;padding-bottom:1px}
+.sp{width:38px;flex:none}
+.td{display:inline-block;width:7px;height:7px;border-radius:50%;background:#b8bfc9;margin:0 2px;animation:bl 1s infinite}
+.td:nth-child(2){animation-delay:.2s}
+.td:nth-child(3){animation-delay:.4s}
+@keyframes bl{50%{opacity:.25}}
+.hint{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);background:rgba(20,28,40,.82);color:#fff;font-size:13px;padding:8px 14px;border-radius:18px;opacity:0;pointer-events:none;transition:.3s;white-space:nowrap;z-index:50}
+.hint.on{opacity:1;pointer-events:auto;cursor:pointer}
+.inp{display:flex;align-items:center;gap:10px;background:#fff;padding:10px 14px 30px;flex:none}
+.inp input{flex:1;border:0;background:#f2f3f5;border-radius:20px;padding:11px 15px;font-size:15px;outline:none;min-width:0}
+.plus,.emo{font-size:22px;color:#8c93a0;flex:none}
+.pop{animation:pop .3s}
+@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.choices{display:flex;flex-direction:column;gap:8px;padding:8px 12px 14px;background:#b2c7da;flex:none}
+.choice{background:#fff;border-radius:14px;padding:10px 14px;font-size:14px;text-align:left;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.choice:active{background:#e8ecf2}
+.choice b{color:#3a6ea5}
+/* phone app */
+.phone.ph{background:#fff}
+.pr{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eef0f3;cursor:pointer}
+.pm{flex:1}
+.pm b{display:block;font-size:16px}
+.pm b.red{color:#ff3b30}
+.pm small{color:#8c93a0}
+.ptab{display:flex;justify-content:space-around;border-top:1px solid #e8eaee;padding:8px 0 28px;font-size:19px;color:#aab0bb;flex:none}
+.ptab span{display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:2px}
+.ptab small{font-size:10px}
+.ptab .on{color:#0a7aff}
+.keyp{display:flex;flex-direction:column;align-items:center}
+.kdisp{height:46px;font-size:32px;margin:10px 0}
+.pad2{display:grid;grid-template-columns:repeat(3,70px);gap:12px 20px}
+.pad2 button{width:70px;height:70px;border-radius:50%;background:#eceef2;font-size:28px;display:flex;align-items:center;justify-content:center}
+.callbtn{margin-top:18px;width:70px;height:70px;border-radius:50%;background:#2fd158;font-size:28px;display:flex;align-items:center;justify-content:center;color:#fff}
+.vm{margin-top:8px;border:1px solid #eee;border-radius:12px;padding:12px}
+.vm b{font-size:16px;display:block}
+.vmx{margin-top:10px;background:#f4f5f7;border-radius:12px;padding:12px;font-size:14px;line-height:1.6;display:none}
+.vmx.show{display:block}
+/* call */
+.phone.cl{background:#2b313c}
+.callbg{position:absolute;inset:0;background:linear-gradient(#5a6575,#1a1d24 80%)}
+.cw{position:absolute;inset:0;padding-top:84px;display:flex;flex-direction:column;align-items:center;color:#fff}
+.cw h2{margin:14px 0 4px;font-size:34px;font-weight:500}
+.cw p{margin:0;color:rgba(255,255,255,.75);font-size:17px}
+.cap{width:86%;margin-top:22px;max-height:210px;overflow-y:auto;display:flex;flex-direction:column;gap:9px}
+.cap .cl{background:rgba(255,255,255,.14);padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.45;color:#fff;margin:0;animation:pop .3s}
+.cbtns{margin-top:auto;margin-bottom:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px 28px;width:80%}
+.cbtns div{display:flex;flex-direction:column;align-items:center;gap:7px}
+.cbtns button{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);font-size:26px;display:flex;align-items:center;justify-content:center;color:#fff}
+.cbtns .end{background:#ff3b30}
+.cbtns small{font-size:13px;color:rgba(255,255,255,.8)}
+/* incoming */
+.inc{position:absolute;left:10px;right:10px;top:44px;background:rgba(36,38,46,.96);color:#fff;border-radius:26px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:150;animation:pop .35s}
+.il{display:flex;gap:10px;align-items:center}
+.il b{display:block;font-size:16px}
+.il small{color:#aaa;font-size:12px}
+.ib{display:flex;gap:10px}
+.ib button{width:46px;height:46px;border-radius:50%;font-size:20px;color:#fff;display:flex;align-items:center;justify-content:center}
+.dn{background:#ff3b30}
+.ac{background:#30d158}
+/* notes */
+.phone.nt{background:#fff}
+.note small{color:#8c93a0}
+.note h2{margin:6px 0 12px;font-size:24px}
+.note pre{white-space:pre-wrap;font:inherit;line-height:1.7;margin:0}
+.nl{background:#f4f5f7;border-radius:14px;overflow:hidden}
+.ni2{padding:11px 16px;border-bottom:1px solid #e6e8ec;cursor:pointer}
+.ni2:last-child{border-bottom:0}
+.ni2 b{display:block;font-size:15px}
+.ni2 span{font-size:13px;color:#8c93a0}
+.npw{text-align:center;display:flex;flex-direction:column;align-items:center}
+.lk2{font-size:44px;margin-top:20px}
+.npw .dots{margin-top:16px}
+.npw .dots i{border-color:#888}
+.npw .dots i.f{background:#15171c;border-color:#15171c}
+.npw .pad{margin-top:6px;gap:10px 22px}
+.npw .pad button{height:62px;width:62px;font-size:26px;background:#e8eaef;color:#15171c}
+/* ig */
+.phone.ig{background:#fff}
+.igh{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;font-size:18px;flex:none}
+.igh b{font-size:18px}
+.igb{flex:1;overflow-y:auto;min-height:0}
+.igt{display:flex;justify-content:space-around;border-top:1px solid #e8eaee;padding:10px 0 28px;font-size:22px;flex:none}
+.igt span{padding:0 20px;cursor:pointer;opacity:.4}
+.igt .on{opacity:1}
+.stories{display:flex;gap:12px;padding:8px 14px;overflow-x:auto}
+.st{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;flex:none}
+.ring{padding:3px;border-radius:50%;background:linear-gradient(135deg,#f9a03f,#e1306c,#7c3aed)}
+.ring .av{border:3px solid #fff}
+.post{padding-bottom:12px}
+.ph{display:flex;gap:8px;align-items:center;padding:8px 14px}
+.post .gb{aspect-ratio:1}
+.pa{padding:8px 14px;font-size:22px;display:flex;gap:12px}
+.pc{padding:0 14px;font-size:14px}
+.pc p{margin:3px 0}
+.cm2{color:#333}
+.liked{color:#e0245e}
+.prof{padding:10px 16px}
+.pt2{display:flex;align-items:center;gap:20px}
+.stat{text-align:center;flex:1}
+.stat b{display:block;font-size:17px}
+.stat small{color:#666}
+.bio{font-size:14px;line-height:1.5}
+.sbtn{width:100%;padding:9px;border-radius:9px;background:#efeff2;font-weight:600;font-size:14px;margin-top:10px}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:14px}
+.pg .gb{border-radius:0}
+.dmr{display:flex;gap:12px;align-items:center;padding:10px 16px;cursor:pointer}
+.dmm{flex:1}
+.dmm small{display:block;color:#8c93a0}
+.un2{width:9px;height:9px;border-radius:50%;background:#3b82f6}
+.empty{text-align:center;padding:60px 20px;color:#8c93a0;line-height:1.8}
+.dmh{padding:10px 16px;font-weight:700;cursor:pointer;border-bottom:1px solid #eee}
+.dmc{padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.db{max-width:78%;border-radius:18px;padding:8px 13px}
+.db.in{background:#efeff2;align-self:flex-start}
+.db.me{background:#6c5ce7;color:#fff;align-self:flex-end}
+.db small{display:block;font-size:10px;opacity:.6}
+.db p{margin:2px 0 0}
+.sn{align-self:flex-end;font-size:11px;color:#8c93a0}
+/* story */
+.sov{position:absolute;inset:0;background:#0b0d14;color:#fff;z-index:45;padding:60px 16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.sbox{border-radius:18px;overflow:hidden;position:relative}
+.scap{position:absolute;bottom:18px;left:0;right:0;text-align:center;margin:0;font-size:20px}
+.sv{background:#1a1d28;border-radius:16px;padding:12px 14px}
+.svr{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:14px}
+.svr small{margin-left:auto;color:#8c93a0}
+.sx{position:absolute;top:56px;right:20px;font-size:20px;cursor:pointer;z-index:2;padding:10px}
+/* X */
+.phone.x{background:#fff}
+.xh{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;font-size:20px;flex:none}
+.xl{font-size:24px}
+.xtabs{display:flex;border-bottom:1px solid #eee;flex:none}
+.xtabs span{flex:1;text-align:center;padding:11px;color:#8c93a0;cursor:pointer;font-weight:600}
+.xtabs .on{color:#111;box-shadow:inset 0 -3px #1d9bf0}
+.xb{flex:1;overflow-y:auto;min-height:0}
+.tw{display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #eef0f3}
+.xa{width:40px;height:40px;border-radius:50%;background:#e7ebf1;display:flex;align-items:center;justify-content:center;flex:none;font-size:20px}
+.xt{min-width:0}
+.xt small{color:#6b7482;font-size:12px}
+.xt p{margin:3px 0 7px;line-height:1.5;font-size:15px}
+.xm{display:flex;gap:24px;color:#6b7482;font-size:13px}
+.tr{padding:10px 16px}
+.trr{padding:10px 0;border-bottom:1px solid #eef0f3}
+.trr b{display:block;font-size:16px}
+.trr small{color:#6b7482}
+/* photos */
+.phone.pl{background:#fff}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.pgrid>div{cursor:pointer}
+.pgrid .gb{border-radius:0}
+.pv{padding:10px 16px}
+.pv .gb{border-radius:16px;aspect-ratio:1}
+.pv p{margin:14px 2px;line-height:1.6;color:#444}
+/* mail */
+.phone.ml{background:#fff}
+.mail{position:relative;padding:11px 0 11px 14px;border-bottom:1px solid #eef0f3;cursor:pointer}
+.mail .ud{position:absolute;left:0;top:18px;width:9px;height:9px;border-radius:50%;background:#0a7aff}
+.mail b{font-size:15px}
+.mail span{float:right;color:#8c93a0;font-size:13px}
+.mail p{margin:3px 0;font-size:14px}
+.mail small{color:#8c93a0;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* calendar */
+.phone.cal{background:#fff}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:6px 0;margin-top:8px}
+.cg small{color:#8c93a0}
+.cg .d{padding:7px 0;border-radius:50%;cursor:pointer;position:relative;font-size:14px}
+.cg .d i{position:absolute;left:50%;bottom:2px;width:4px;height:4px;border-radius:50%;background:#af52de;transform:translateX(-50%)}
+.cg .sel{background:#e8e9ee}
+.cg .today{background:#ff3b30;color:#fff}
+.cev{margin-top:16px}
+.cev h3{margin:0 0 8px}
+.ce{display:flex;gap:14px;padding:8px 0;border-bottom:1px solid #eef0f3}
+.ce b{width:52px;color:#8c93a0;font-weight:500;flex:none}
+.mut{color:#8c93a0}
+/* clock / weather */
+.phone.clk{background:#000;color:#fff}
+.phone.clk .nav b,.phone.clk .bk{color:#fff}
+.phone.clk .bk{color:#ff9f0a}
+.al{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.al big{font-size:44px;font-weight:300;display:block;line-height:1}
+.al small{color:rgba(255,255,255,.5)}
+.al i{width:46px;height:28px;border-radius:14px;background:#333;position:relative;cursor:pointer}
+.al i.on{background:#30d158}
+.al i::after{content:'';position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.al i.on::after{left:20px}
+.phone.wx{background:linear-gradient(#3a7bd5,#1a3a6b);color:#fff}
+.phone.wx .bk{color:#fff}
+.wxb{padding:20px 18px;text-align:center}
+.wxb h2{font-size:28px;margin:0}
+.wt{font-size:80px;font-weight:200;line-height:1.1}
+.wrow{display:flex;justify-content:space-between;margin-top:22px;font-size:14px;background:rgba(255,255,255,.12);border-radius:16px;padding:14px 10px;gap:4px}
+.wrow span{flex:1;text-align:center;font-size:12px;line-height:1.4}
+.wn{margin-top:18px;font-size:14px;color:rgba(255,255,255,.8)}
+/* settings / maps / safari / music */
+.phone.st,.phone.mp,.phone.sf,.phone.ms{background:#fff}
+.sl{background:#f4f5f7;border-radius:14px;overflow:hidden;margin-top:6px}
+.sr{display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e6e8ec;font-size:15px}
+.sr:last-child{border-bottom:0}
+.sr b{font-weight:500;color:#666;font-size:14px}
+.mapv{height:180px;background:linear-gradient(135deg,#d9ead3,#f7f4ea);margin:0 16px;border-radius:16px;position:relative;overflow:hidden}
+.mapv::after{content:'📍';position:absolute;left:48%;top:40%;font-size:28px;animation:pin 2s infinite}
+@keyframes pin{50%{transform:translateY(-6px)}}
+.mrr{padding:12px 0;border-bottom:1px solid #eef0f3}
+.mrr b{display:block}
+.mrr small{color:#8c93a0}
+.tk{display:flex;gap:12px;align-items:center;padding:9px 0;cursor:pointer}
+.tcv{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,#ff6b8a,#6c5ce7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.tk b{display:block;font-size:15px}
+.tk small{display:block;color:#8c93a0}
+.mini{position:absolute;left:12px;right:12px;bottom:34px;background:#f1f2f5;border-radius:14px;padding:13px 16px;font-size:14px;z-index:10}
+.mini a{color:#0a7aff;text-decoration:none;margin-left:6px}
+/* 系统级 */
+.phone.kk,.phone.kc{color:#15171c}
+</style>
+</head>
+<body>
+<div class="frame"><div class="phone" id="phone" data-sb="light"><div class="isl"></div><div id="sb"><span id="sbt">16:36</span><i>▂▄▆█ 5G ▮</i></div><div id="scr"></div><div class="bar-home" data-a="home"><i></i></div><div id="toast"></div></div></div>
+<script>
+/* ============================================================
+   基础数据
+   ============================================================ */
+const P={
+ me:{n:'郭智硕',a:'🐥',c:'#ffd94d'},
+ js:{n:'金正洙',a:'🐱',c:'#f3b58b'},
+ cm:{n:'吴承珉',a:'🦊',c:'#d8c3a5'},
+ hj:{n:'韩亨準',a:'🐰',c:'#f0a35e'},
+ zy:{n:'李周演',a:'🐶',c:'#f5c6d6'},
+ ji:{n:'具建逸',a:'🐹',c:'#4a4a4a'},
+ mg:{n:'经纪人哥',a:'💼',c:'#9fb4c7'},
+ mom:{n:'妈妈',a:'🌸',c:'#f4b6c2'},
+ sr:{n:'前辈（声乐）',a:'🎤',c:'#8fa0bb'},
+ dc:{n:'编舞老师',a:'🕺',c:'#b6a6d8'},
+ hs:{n:'造型姐姐',a:'✂️',c:'#c5d9c0'},
+ jk:{n:'赵科长（公司）',a:'🏢',c:'#a7b8c9'}
+};
+const av=(id,sz=44)=>{const p=P[id]||{a:'👤',c:'#ddd'};return `<div class="av" style="width:${sz}px;height:${sz}px;background:${p.c};font-size:${sz*.52}px">${p.a}</div>`;};
+const cav=(c,sz=44)=>c.group?`<div class="av grp" style="width:${sz}px;height:${sz}px;background:#aac2d6"><span style="font-size:${sz*.5}px">👥</span></div>`:av(c.ava,sz);
+const gradBox=(g,emo,sz)=>`<div class="gb" style="background:linear-gradient(145deg,${g.split(',')[0]},${g.split(',')[1]});${sz?`font-size:${sz}px`:''}">${emo}</div>`;
+const M=a=>a.map(r=>r.length==1?{k:'sys',x:r[0]}:{w:r[0],t:r[1],x:r[2],k:r[3]||''});
+const TY=ms=>({k:'typing',ms});
+
+/* ============================================================
+   聊天数据
+   ============================================================ */
+const CHATS=[
+{id:'js',title:'金正洙',ava:'js',time:'16:30',unread:4,
+msgs:M([['2026年10月14日 星期三'],['js','23:12','智硕啊 睡了吗'],['js','23:12','我买了夜宵 你出来吃吧'],['me','23:40','哥 我睡了 明天吧'],['js','23:41','…好 晚安'],['js','23:41','🐱 晚安','sticker'],['2026年10月15日 星期四'],['me','09:02','哥 吃早饭了吗'],['js','09:03','没有 在等你一起'],['js','09:03','你上午不是编曲练习吗 一起去'],['me','09:31','我先走了 哥慢慢来'],['js','09:32','…'],['js','09:32','智硕啊 你最近是不是在躲我'],['me','14:20','没有啊 哈哈哈'],['js','14:21','哈哈哈'],['js','14:21','好吧'],['2026年10月16日 星期五'],['js','01:48','你还没睡吗'],['js','01:49','工作室的灯一直亮着 我从窗口看到了'],['me','03:12','','del'],['me','03:13','哥 我没事 快睡'],['js','03:13','你刚才打了什么 又删了'],['js','03:14','智硕啊'],['me','11:45','没什么 手滑'],['js','11:46','手滑能滑出一整行字吗'],['js','11:46','算了'],['js','21:05','IMG:cp2|工作室桌上两杯热可可 其中一杯杯身上写着“智硕”','img'],['js','21:06','给你留的 凉了就不好喝了'],['js','22:10','智硕啊 看群里的通知了吗'],['js','22:10','你要搬出去？'],['js','22:11','我想听你亲口说'],['me','23:58','我晚点跟哥说'],['js','23:58','晚点是几点'],['js','23:59','我在宿舍 等你'],['2026年10月17日 星期六'],['js','07:20','你昨晚没回来'],['js','07:20','智硕啊'],['me','12:40','我在工作室 午饭吃过了'],['js','12:41','我问的不是午饭'],['js','12:41','那我换一个问法'],['js','12:42','你要走 是因为我吗'],['js','16:30','…回我一下 好不好']]),
+live:[[TY(2200),['js','16:37','智硕啊'],['js','16:37','我现在去工作室找你']],[TY(2600),TY(1200),['js','16:39','…算了 你要是想躲 我不追了']],[['js','16:40','但是 智硕啊'],['js','16:40','搬走之前 至少让我知道原因']],[['js','16:42','写错了','del'],['js','16:43','明天彩排 同一台车 我会在楼下等你']],[TY(3000),['js','16:46','电话也不接'],['js','16:46','🐱 …','sticker']]],
+ok:['…嗯','你说话了','好 我等你'],sus:['…你是谁','智硕不会这样说话','这个语气 不像你'],
+choices:[
+ {at:3,choices:[
+  {t:'“哥，我晚点回去。你先睡。”',r:[['js','晚点是什么时候？']]},
+  {t:'“哥，别等我了。”',r:[['js','那你现在在哪。'],['js','给我一个位置。']]},
+  {t:'“哥，我没事，真的。”',r:[['js','你每次说没事，都不是没事。']]}
+ ]},
+ {at:6,choices:[
+  {t:'“哥，我没躲你。”',r:[['js','那你为什么连消息都不回。']]},
+  {t:'“哥，我需要一点时间。”',r:[['js','时间可以。但别把我排除在外。']]},
+  {t:'“哥，你别问了。”',r:[['js','…好。我不问了。']]}
+ ]}
+]},
+{id:'dorm',title:'宿舍群 (郭正李)',group:3,ava:'dorm',time:'10:10',unread:2,
+msgs:M([['2026年10月16日 星期五'],['zy','22:15','智硕 真的要搬吗'],['js','22:16','嗯'],['zy','22:16','那我们宿舍就少一个人了'],['js','22:17','只是换地方住 别多想'],['me','22:40','周演啊 我就搬到旁边'],['js','22:41','东西收拾得怎么样了'],['me','22:42','收拾了一半'],['js','22:42','需要帮忙就说'],['2026年10月17日 星期六'],['js','08:50','智硕啊 早饭在桌上'],['me','10:00','我吃过了 哥'],['js','10:01','嗯 走吧 时间差不多了'],['zy','10:10','我先走啦 马上来']]),
+live:[[['js','16:40','工作室的门锁了吗'],['me','16:41','没锁']],[['js','16:42','我在过去的路上']]],
+rx:[['js','嗯'],['zy','好！']],rxs:[['js','…'],['zy','怎么了']],
+choices:[
+ {at:1,choices:[
+  {t:'“周演，你吉他练得怎么样？”',r:[['zy','练了！正洙哥还夸我了！'],['js','…我夸的是你进步了。']]},
+  {t:'“正洙哥，不用过来，我待会儿回去。”',r:[['js','几点。'],['zy','…你们吵架了？']]},
+  {t:'“好，我在工作室等你。”',r:[['js','嗯。'],['zy','（偷笑）']]}
+ ]}
+]},
+{id:'big',title:'Xdinary Heroes 大群',group:6,ava:'big',time:'10:05',unread:5,
+msgs:M([['2026年10月16日 星期五'],['mg','22:03','[公告] 收到公司通知：为回归期间的状态管理与个人作业环境，郭智硕成员将于下周一（10/19）起搬至公司旁的新住处。已与成员本人确认。其余成员宿舍分配不变。'],['zy','22:04','？？？'],['zy','22:04','智硕 要走吗'],['hj','22:05','什么 我没看错吧'],['hj','22:05','智硕啊？？'],['cm','22:06','回归前一周'],['cm','22:08','智硕啊…'],['cm','22:09','不是 我是想问 你吃饭怎么办 你不会做饭…'],['cm','22:09','啊 不是现在说这个的时候'],['js','22:10','经纪人哥，回归前一周换宿舍的原因是什么？成员之间事先没有被通知。'],['mg','22:12','智硕的状态管理和个人练习需要，公司和本人协商后决定的。正洙啊，这个我们私下说。'],['ji','22:13','建逸哥在这里。正洙，先别急。'],['js','22:13','建逸哥，团体的事我想在群里问清楚。'],['js','22:13','智硕啊，你自己说。'],['ji','22:14','智硕，建逸哥问你一句，是你自己想搬的吗？'],['hj','22:14','先别…'],['cm','22:15','先回归吧。回归之后再谈。'],['js','22:16','回归之后他就已经走了。'],['zy','22:17','不要吵ㅠㅠ'],['js','22:20','智硕啊。大家都在，你说一句。'],['ji','22:25','正洙，电话不接、消息不回，说明他现在不想说。你现在的逼问解决不了任何事。所有人放下手机。'],['js','22:31','智硕啊，我在等你。'],['mg','22:40','今晚先到这里。明天彩排前集合时再谈。大家早点休息。'],['me','23:55','抱歉。回归结束后我会说明。'],['js','23:56','说明什么，我问的是你自己想不想。'],['ji','23:57','正洙。'],['hj','23:58','好了好了 晚安晚安 明天吃辣炒年糕好不好'],['hj','23:58','❤️ 晚安大家','sticker'],['2026年10月17日 星期六'],['zy','15:00','智硕！下午教我弹吉他吧！！我买了新的！'],['js','15:02','周演，你自己的部分练完了吗？'],['zy','15:03','练完了呀 正洙哥'],['js','15:05','晚上我要用工作室。智硕没空。']]),
+live:[[TY(2000),['hj','16:41','工作室里煮好的泡面 6点前吃完','img'],['hj','16:41','谁来']],[['zy','16:42','我！！！'],['cm','16:43','我要 但我要自己带碗…']],[['ji','16:44','智硕，吃了吗？'],TY(2800),['ji','16:44','正洙，你来我房间一趟。']]],
+rx:[['hj','好的好的！！'],['cm','…'],['zy','？？']],rxs:[['hj','智硕 被盗号了？ㅋㅋㅋ'],['cm','…你吃错药了'],['zy','你还好吗？']],
+choices:[
+ {at:0,choices:[
+  {t:'“亨準，给我留一碗。”',r:[['hj','好嘞！智硕我爱你！'],['cm','我也要……']]},
+  {t:'“你们吃吧，我晚点回。”',r:[['hj','不行！泡面会坨！'],['ji','智硕，回来吃。']]},
+  {t:'“正洙哥，你要吃吗？”',r:[['js','…你问我？'],['hj','哦哦哦哦哦']]}
+ ]}
+]},
+{id:'small',title:'02z 小群',group:4,ava:'small',time:'07:50',unread:2,
+msgs:M([['2026年10月15日 星期四'],['hj','23:30','兄弟们 我发现一个新梗'],['hj','23:30','🐥☔ 小鸡穿雨衣','sticker'],['hj','23:31','这是智硕'],['me','23:32','哈哈哈哈'],['cm','23:32','像'],['hj','23:33','不要笑智硕 他会难过'],['me','23:33','我没有难过 哈哈'],['hj','23:34','你们看他那个“哈哈哈” 一个标点都没有 一点灵魂都没有'],['me','23:34','哈哈哈哈哈哈哈'],['hj','23:34','好多了'],['2026年10月16日 星期五'],['cm','12:10','便利店的两个三角饭团 金枪鱼蛋黄酱和泡菜','img'],['cm','12:10','买多了'],['hj','12:11','金枪鱼是给我的吗'],['cm','12:11','嗯'],['hj','12:12','那个 我马上过去！！不是 我走过去！'],['hj','12:12','走过去还是跑过去 全楼都听到你的脚步声了ㅋㅋㅋ'],['cm','12:13','亨準你闭嘴'],['hj','12:13','不用跑 饭团不会长腿'],['cm','12:14','我知道！！'],['hj','22:50','智硕 你出来 我们聊聊'],['me','22:52','亨準 现在不想说'],['hj','22:52','我就想问一句'],['hj','22:53','是不是因为正洙哥'],['cm','22:53','亨準！！'],['zy','22:54','闭嘴 亨準'],['hj','22:54','我错了 我错了'],['hj','22:55','不对 我没错 我就是担心'],['me','22:58','我没事'],['me','22:58','真的不是任何人的错'],['cm','23:01','智硕啊…'],['cm','23:02','我给你收拾新房间吧 新房子要先消毒'],['me','23:03','哈哈 谢谢承珉'],['cm','23:03','不用谢！！我最擅长这个了'],['zy','23:10','睡吧'],['zy','23:10','明天要彩排'],['2026年10月17日 星期六'],['cm','07:45','亨準 你的杯子 我昨晚洗过了 放在你桌上'],['hj','07:46','谢了'],['hj','07:46','不用洗的'],['cm','07:47','我手痒…'],['hj','07:47','手痒就来洗我的'],['zy','07:48','…你们听听 这是人话吗'],['hj','07:48','闭嘴 周演'],['cm','07:49','什么！？洗什么 不是 我是说…杯子！！'],['hj','07:49','杯子。'],['zy','07:50','啧啧啧'],['me','07:50','哈哈哈哈']]),
+live:[[['hj','16:40','窗外下雨了 有人带伞吗','img']],[['cm','16:41','我带了两把'],['cm','16:41','不是 我一把是备用的 万一谁没带'],['hj','16:42','我没带']],[TY(2200),['cm','16:43','那…那我们一起走 我的伞比较大'],['hj','16:43','比较大 ㅋㅋㅋㅋ 쯧쯧'],['zy','16:44','嗯']],[['cm','16:46','智硕 帮我个忙 我想给亨準买个东西 但我不知道他喜欢什么'],['hj','16:46','围巾 他怕冷'],['zy','16:47','亨準 我也在这个群里']]],
+rx:[['hj','哈哈哈 知道了'],['cm','嗯嗯！'],['zy','嗯']],rxs:[['hj','智硕 你今天话好多'],['zy','…你谁'],['cm','智硕你是不是发烧了？？']],
+choices:[
+ {at:4,choices:[
+  {t:'“承珉，送围巾吧。我也送过。”',r:[['cm','真的吗！那我就送围巾！'],['hj','……你送过我围巾？'],['cm','啊啊啊啊啊']]},
+  {t:'“你们俩自己解决。”',r:[['hj','智硕！你不能见死不救！'],['cm','智硕啊……']]},
+  {t:'“亨準，你就说你想要什么。”',r:[['hj','我什么都不想要。'],['zy','他想要承珉的围巾。'],['hj','周演你闭嘴！']]}
+ ]}
+]},
+{id:'cm',title:'吴承珉',ava:'cm',time:'10:04',unread:1,
+msgs:M([['2026年10月16日 星期五'],['cm','00:20','智硕啊 睡了吗'],['me','00:21','没'],['cm','00:21','我有个问题…但是很蠢'],['me','00:22','说吧'],['cm','00:23','如果一个人… 他对我很好 但他对所有人都很好'],['cm','00:23','那我是不是不应该多想'],['me','00:24','你是在说亨準吗'],['cm','00:24','不是！！！'],['cm','00:24','是…'],['cm','00:25','你怎么知道的'],['me','00:25','全团都知道 只有你自己不知道'],['cm','00:26','什么！？！？'],['cm','00:26','那他呢 他知道吗'],['me','00:27','你问他'],['cm','00:27','我不敢'],['cm','00:28','我草稿打了十七版 全删了'],['me','00:29','发给我看看'],['cm','00:29','IMG:cm2|备忘录里的十七版草稿截图','img'],['me','00:31','第三版'],['cm','00:31','真的？我觉得第三版太直接了'],['cm','00:32','智硕啊 你呢'],['cm','00:32','你和正洙哥 最近是不是…'],['me','00:35','我去倒杯水'],['cm','00:35','…好'],['cm','00:36','对不起 我多嘴了'],['me','00:51','没有 晚安 承珉'],['2026年10月17日 星期六'],['cm','08:10','我煮了粥！！看到了吗！！'],['me','10:03','看到了 谢谢'],['cm','10:03','智硕啊 今天要不要一起吃'],['me','10:04','我在工作室 下次'],['cm','10:04','好…']]),
+live:[[TY(2400),TY(1500),['cm','16:39','智硕啊 你看到群里正洙哥的话了吗']],[['cm','16:40','我觉得正洙哥 其实很难过'],['cm','16:41','不对 我不应该说 当我没说']],[['cm','16:42','（撤回了一条消息）','del'],['cm','16:43','总之我在 随时']]],
+rx:[['cm','嗯嗯！'],['cm','好！']],rxs:[['cm','智硕啊… 你是不是不舒服？'],['cm','你今天好奇怪（担心）']],
+choices:[
+ {at:2,choices:[
+  {t:'“承珉，我觉得正洙哥需要自己冷静。”',r:[['cm','嗯……你说得对。'],['cm','但是智硕啊，你也需要人陪吧？']]},
+  {t:'“你去陪陪他吧。”',r:[['cm','我去？他会不会把我赶出来……'],['cm','算了，你说了我就去。']]},
+  {t:'“别提他了。”',r:[['cm','……好。']]}
+ ]}
+]}
+];
+/* 正洙轰炸消息池 */
+const BOMB_SETS=[
+[['16:47','智硕啊'],['16:47','你在看吗'],['16:48','我知道你在看'],['16:48','你手机在线上'],['16:50','为什么已读不回'],['16:51','智硕啊'],['16:51','我求你'],['16:53','你是不是在哭'],['16:54','别哭'],['16:54','不对 你也可以哭 但让我在旁边'],['16:56','我现在到楼下了'],['16:57','工作室灯亮着 你在里面'],['16:57','我上来了'],['16:58','开门'],['16:59','智硕啊 开门'],['17:01','如果你不开 我就在门口坐着'],['17:02','反正我也没地方去'],['17:03','你至少把门打开一条缝'],['17:04','让我看你一眼'],['17:05','就一眼'],['17:06','我走了 你保重'],['17:07','（又回来）'],['17:08','刚才那句不算'],['17:09','我真的走了'],['17:10','但是明天彩排 你要来'],['17:10','你不来 我也不去'],['17:11','我说真的']],
+[['16:47','你上次说想吃的那家店 我预约了'],['16:48','周六 两个人'],['16:48','你回我一下 我就去取消'],['16:50','智硕啊'],['16:51','你不说话 我就当你答应了'],['16:52','你答应过我的 不会不理我'],['16:53','你搬家的事 我想了一晚上'],['16:54','我不准'],['16:54','你听到没有 我不准'],['16:55','你要是搬走 我就每天去新房子门口等你'],['16:56','我不是开玩笑的'],['16:58','智硕啊'],['16:59','你回我一句 就一句'],['17:00','“智硕 我在” 就这样 四个字'],['17:02','你是不是觉得我很可怕'],['17:03','我也觉得'],['17:04','但我控制不住'],['17:06','你开门 我们好好说'],['17:08','我数三下 你不开我就走'],['17:09','一'],['17:09','二'],['17:10','……三'],['17:12','我没走'],['17:13','我在等你']],
+[['16:47','智硕啊 你在工作室对不对'],['16:48','我带了吃的'],['16:48','你开一下门 我把东西放门口就走'],['16:50','真的 我不进去'],['16:52','你不开 我就一直站着'],['16:54','你忍心让我站一晚上吗'],['16:56','以前你绝对不会这样的'],['16:58','是不是我哪里做错了'],['17:00','你告诉我 我改'],['17:02','智硕啊'],['17:03','你别不要我'],['17:05','我只有你了'],['17:06','你听到没有 我只有你了'],['17:08','你搬家 是想把我一个人留在这里吗'],['17:10','我不准 你听到没有 我不准'],['17:12','你开门'],['17:13','你开门'],['17:14','你开门'],['17:15','智硕啊 求你了']],
+[['16:47','我刚才语气不好 对不起'],['16:48','你回我一下好不好'],['16:50','我不逼你了 真的'],['16:52','你想搬 就搬吧'],['16:54','但是你得告诉我 为什么'],['16:56','我是不是哪里让你不舒服了'],['16:58','你以前什么都跟我说的'],['17:00','现在连一个“嗯”都不肯给我'],['17:02','智硕啊 我们认识多少年了'],['17:04','你数过吗'],['17:06','我数过'],['17:08','七年'],['17:10','七年 你连一句实话都不肯给我'],['17:12','算了'],['17:13','你不想说 我不问了'],['17:15','但是你别躲我'],['17:16','我受不了这个']],
+[['16:47','你在工作室 我在楼下'],['16:48','你下来 我们当面说'],['16:50','你不下来 我就上去'],['16:52','我上来了'],['16:53','你听到脚步声了吗'],['16:55','我在门口'],['16:56','开门'],['16:58','智硕啊'],['16:59','你连门都不肯给我开吗'],['17:01','那我在门口等你'],['17:02','你什么时候出来 我什么时候走'],['17:04','你饿不饿 我带了饭'],['17:06','你不吃 我也不吃'],['17:08','你忍心吗'],['17:10','你以前不会这样的'],['17:12','你开门'],['17:13','我最后说一次 你开门'],['17:15','……好吧 我不逼你了'],['17:17','但是我会一直在这里']]
+];
+/* 拒绝来电后正洙的不同反应 */
+const REJECT_REACTIONS=[
+[['js','你挂了。'],['js','为什么？'],['js','你连一句话都不肯跟我说吗。'],['js','智硕啊…'],['js','我再打一次 你接一下好不好']],
+[['js','……'],['js','你按掉了。'],['js','我就知道。'],['js','但是我不会放弃的。'],['js','你躲不掉的 智硕啊']],
+[['js','你挂我电话。'],['js','第一次。'],['js','以前你从来不会挂我电话。'],['js','你是不是真的不要我了'],['js','你说话啊']],
+[['js','……好。'],['js','你不想接 我不勉强。'],['js','但是我会一直打。'],['js','直到你接为止。'],['js','我有的是时间']],
+[['js','（沉默）'],['js','你挂吧。'],['js','你挂多少次 我就打多少次。'],['js','我跟你耗到底。'],['js','你跑不掉的。']],
+[['js','智硕啊。'],['js','我听到了 你那边很安静。'],['js','你在工作室对不对。'],['js','你开门 我们好好说。'],['js','我不闹了 真的。']]
+];
+/* ============================================================
+   备忘录
+   ============================================================ */
+const NOTES=[
+{id:'n1',title:'回归 D-7 待办',date:'10月16日',body:`☑ 封面造型确认\n☑ 副歌吉他 改一版发群里\n☐ 编舞走位 副歌 B 段（往右半步）\n☐ 个人预告 录音（周二 19:00）\n☐ 搬家：纸箱 / 打包 / 钥匙\n☐ 给妈妈回电话\n☐ 周二 头发上色（深色）\n☐ 睡觉（认真的）`},
+{id:'n2',title:'Blue Hour（暂定）',date:'10月13日',body:`天快亮的时候\n窗外是不上不下的蓝\n你在隔壁房间翻了个身\n我听得见\n\n（副歌）\n如果沉默也算一种回答\n那我已经答了很久\n\n—— 第二段还没想好\n—— 吉他前奏用 Dm 开头 不要太满`},
+{id:'n3',title:'搬家清单',date:'10月16日',body:`纸箱 × 6\n吉他 × 2（有一把是哥送的 要手提）\n窗帘\n充电线 / 热水壶\n小夜灯（睡不着的时候用）\n拖鞋\n正洙哥的灰色帽衫（洗好 还回去？还是不还？）\n\n钥匙：周一 10:00 经纪人哥`},
+{id:'n4',title:'礼物',date:'10月12日',body:`06/26 正洙哥 生日\n· 围巾（他去年说过冷）\n· 手套\n· 耳机壳\n· 豚鼠抱枕（不行 太明显了）\n\n预算别超过上个月`},
+{id:'n5',title:'没发出去的话',date:'10月16日 03:12',body:`哥\n\n哥 我想说\n\n哥 我不是躲你\n\n——\n\n我怕再这样下去\n我会变得很难看\n\n算了`},
+{id:'n6',title:'🔒 给哥',date:'10月12日',locked:'0626',body:`（没有发出去的）\n\n今天休息室里 哥靠在亨準肩上睡着了\n我装作没看到 把外套递给了周演\n\n我是不是没有资格难过\n\n哥不知道\n每次听到“智硕啊” 我都要先深呼吸一次\n\n我想搬走\n这样就不用每天确认 哥对谁笑 对谁好\n\n也因为 再待下去\n我可能会说出来\n\n说出来之后呢\n团体怎么办 回归怎么办 哥怎么办\n\n先搬走\n等回归结束\n等我想好`},
+{id:'n7',title:'凌晨三点的念头',date:'10月16日 03:40',body:`他今天又问我了\n“智硕啊 你是不是在躲我”\n\n我笑着说没有\n笑得脸都僵了\n\n其实我只是怕\n怕再靠近一点\n我就会把所有话都说出来\n\n说出来之后呢\n他会怎么看我\n\n算了 不想了`},
+{id:'n8',title:'🔒 真正的原因',date:'10月10日 02:15',locked:'0626',body:`我决定搬走了。\n\n不是因为讨厌他。\n\n是因为我发现自己越来越不对劲。\n\n他开始跟别的成员亲近 我会难受。\n他一天不跟我说话 我会胡思乱想。\n他叫我“智硕啊” 的时候 我心跳会加速。\n\n这不是正常的 队友之间的关系。\n\n上周 我梦见他了。\n醒来之后 我坐在床上 发了很久的呆。\n\n我知道这是什么。\n\n所以我必须搬走。\n\n离他远一点。\n等回归结束。\n等这份心情冷掉。\n\n不然我怕有一天 我会说出来。\n\n说出来之后 团体怎么办。\n回归怎么办。\n他怎么办。\n\n他大概会很困扰吧。\n\n所以 搬走。\n\n这是我唯一能想到的办法。`},
+{id:'n9',title:'赵科长谈话记录',date:'10月11日',body:`赵科长：你确定要申请换宿舍？回归前一周，这个时间点不太合适。\n\n我：确定。\n\n赵科长：原因呢？公司需要理由。\n\n我：个人状态管理。需要独立空间。\n\n赵科长：（看了我很久）智硕啊，你最近是不是压力太大了。\n\n我：没有。就是想要个安静的地方。\n\n赵科长：……好吧。我帮你走流程。但是回归期间，状态不能出问题。\n\n我：我知道。\n\n赵科长：还有，Halcyon 那边又联系我了。你个人的事我不干涉，但你自己想清楚。\n\n我：谢谢科长。`},
+{id:'n10',title:'给正洙哥的草稿（未发送）',date:'10月17日 13:20',body:`哥：\n\n我搬走 不是因为生你的气。\n\n是我自己的问题。\n\n你对我太好了。\n好到我不知道该怎么面对。\n\n我需要一点距离。\n\n就一点。\n\n等我能好好站在你面前的时候 我会回来的。\n\n——智硕`}
+];
+/* ============================================================
+   通话
+   ============================================================ */
+const CALLS={
+ js:{ring:9000,none:true,tip:'响了很久 无人接听。'},
+ cm:{ring:2200,lines:[[600,'cm','어？智硕啊 你打给我？'],[2000,'cm','喂？智硕啊？'],[2000,'cm','…怎么不说话 信号不好吗'],[2200,'cm','（小声）我先去把窗户关上 冷…'],[2000,'cm','喂？…那我挂了 有事发消息']]},
+ hj:{ring:1800,lines:[[500,'hj','喂喂喂？智硕？？'],[1800,'hj','不会是打错了吧 ㅋㅋㅋ 还是想我了'],[2000,'hj','说话说话说话 我数到三 一 二'],[2000,'hj','…挂了 小气']]},
+ zy:{ring:3000,lines:[[500,'zy','…喂'],[1800,'zy','智硕？'],[2000,'zy','不说话 我挂了'],[1500,'zy','…嘟。']]},
+ mom:{ring:2500,lines:[[500,'mom','喂？儿子？'],[1800,'mom','怎么不说话…是不是按错了'],[2200,'mom','吃饭了吗 吃了就好 妈妈不吵你 …挂了啊']]},
+ sr:{ring:3200,lines:[[600,'sr','智硕啊？'],[2000,'sr','…你打给我 我很高兴'],[2400,'sr','你不说话也没关系 我听着 有空见个面 好吗']]},
+ dc:{ring:4000,none:true,tip:'对方正在授课 暂时无法接听。'},
+ hs:{ring:4000,none:true,tip:'无人接听。'}
+};
+/* 正洙的告白电话——队长身份/02z称呼已修正 */
+const JS_CONFESSION=[
+[600,'js','智硕啊。'],
+[2200,'js','你终于接了。'],
+[1800,'js','你知不知道 我打了多少个电话。'],
+[2000,'js','我在你工作室楼下站了两个小时。'],
+[2400,'js','我想了很多。'],
+[2600,'js','我想清楚了。'],
+[2000,'js','你搬家 是因为我 对不对。'],
+[2200,'js','你不用回答。我听你呼吸就知道了。'],
+[2400,'js','智硕啊。'],
+[2000,'js','我喜欢你。'],
+[2800,'js','不是队友之间的那种。'],
+[2400,'js','是想每天醒来第一个看到你 的那种。'],
+[2600,'js','你搬走 是因为你也感觉到了 对不对。'],
+[2400,'js','所以你才要逃。'],
+[2200,'js','我不准。'],
+[2000,'js','你听到没有 我不准你逃。'],
+[2600,'js','我可以等。等回归结束。等你想清楚。'],
+[2400,'js','但是你不准搬走。'],
+[2200,'js','至少 不准搬到我找不到的地方。'],
+[2800,'js','智硕啊。'],
+[2000,'js','说句话。'],
+[2400,'js','……好吧。你不说 我当你答应了。'],
+[2600,'js','明天彩排。我在楼下等你。'],
+[1800,'js','（很轻地）晚安。']
+];
+const JS_CALLS={
+ final:JS_CONFESSION,
+ soft:[[600,'js','智硕啊。'],[2000,'js','我不逼你。'],[2400,'js','你只要告诉我 你安全 就够了。'],[2000,'js','…好 我不问了。']],
+ angry:[[500,'js','你终于接了。'],[1800,'js','你知道我打了多少个电话吗。'],[2200,'js','你知不知道我有多担心。'],[2000,'js','…我不是要凶你。']],
+ quiet:[[800,'js','…'],[2000,'js','我不说话 你也不说话。'],[2400,'js','那我们就这样耗着。'],[3000,'js','…好吧 你赢了。']]
+};
+const RECENTS=[{id:'js',dir:'miss',t:'16:34',n:1},{id:'js',dir:'miss',t:'16:29',n:1},{id:'js',dir:'miss',t:'16:21',n:1},{id:'mg',dir:'in',t:'昨天'},{id:'mom',dir:'out',t:'昨天'},{id:'cm',dir:'in',t:'10月15日'},{id:'sr',dir:'miss',t:'10月14日'}];
+const EVENTS={'2026-10-17':[['全天','购物'],['全天','洗衣服'],['12:00','公司集合 · 服装 / 走位 / 造型']],'2026-10-18':[['10:00','个人预告 录音（暂定）']],'2026-10-19':[['10:00','搬家 · 经纪人哥陪同'],['15:00','舞蹈练习室']],'2026-10-20':[['14:00','封面 / 内页造型'],['19:00','个人预告 录音'],['全天','头发上色']],'2026-10-21':[['17:00','舞台彩排']],'2026-10-22':[['10:00','MV 终看'],['15:00','广播 · 预录']],'2026-10-23':[['全天','休整（早睡）']],'2026-10-24':[['18:00','🎧 新专辑音源公开']],'2026-10-26':[['06:00','音乐节目 事前录制']],'2026-06-26':[['全天','🎂 金正洙 生日']]};
+const MAILS=[
+{f:'Halcyon Records',t:'关于合作洽谈的再次邀请',d:'10月14日',un:1,b:`郭智硕 先生，\n\n您好，我是 Halcyon Records 的制作人。\n\n上次联系后一直没有收到您的回复。我们依然很希望在您方便的时候，与您聊一聊个人作品方面的合作可能。\n\n当然，我们完全理解您的团体活动是优先的，邀请长期有效，没有时间限制。\n\n期待您的回信。\n\nHalcyon Records A&R 팀`},
+{f:'宿舍管理处',t:'[确认] 住户变更与钥匙交接',d:'10月16日',un:1,b:`郭智硕 先生，\n\n收到公司提交的住户变更申请：\n· 新住处入住日：10 月 19 日（周一）\n· 钥匙领取：10:00，经纪人陪同\n· 原宿舍 房间物品需在 10 月 18 日前整理完毕\n\n如有疑问请联系管理处。`},
+{f:'音乐平台',t:'你关注的 Xdinary Heroes 将在 10/24 发行新专辑',d:'10月14日',un:0,b:`你关注的艺人 Xdinary Heroes 将于 10 月 24 日 18:00 发行新专辑。\n提前收藏，音源公开时第一时间收到通知。`},
+{f:'赵科长（公司）',t:'关于郭智硕成员住宿变更的内部通知',d:'10月16日',un:1,b:`智硕啊，\n\n公司这边已经按你的请求走流程了。\n\n我想确认一下：你真的想好了吗？\n\n如果是因为组合内部的一些状况，我们可以再谈谈，公司可以协调。但你坚持要自己申请的话，我不会再多问。\n\n另外，Halcyon 那边又联系我了。你个人的事我不会干涉，只是提醒你，合同条款要看清楚。\n\n——赵科长`},
+{f:'金正洙',t:'（无主题）',d:'10月17日',un:1,b:`智硕啊，\n\n我写了删 删了写。\n\n你搬家的事，我想了一晚上。\n\n我不是要拦你。\n\n但是你能不能告诉我，我到底做错了什么。\n\n——正洙`},
+{f:'银行',t:'10月信用卡账单已出',d:'10月17日',un:0,b:`郭智硕 先生，\n\n本期应还金额：₩ 1,284,000\n到期日：10 月 25 日\n\n（其中含：乐器店 ₩ 640,000、咖啡 ₩ 58,000、便利店 ₩ 21,000）`},
+{f:'具建逸',t:'有空吗？哥想跟你聊聊',d:'10月17日',un:0,b:`智硕啊，\n\n建逸哥。\n\n我知道你最近状态不太好。\n\n正洙那小子 做事太急 你别往心里去。\n\n但是智硕啊 搬家这种事 你一个人扛着 哥看着心疼。\n\n不管什么原因 你都可以跟哥说。\n\n哥不会告诉别人。\n\n——建逸`},
+{f:'妈妈',t:'这周回家吃饭吗？',d:'10月16日',un:0,b:`儿子啊，\n\n妈妈看了你们的预告。\n\n你好像瘦了。\n\n这周有空回家吃饭吗？妈妈给你做你爱吃的。\n\n如果忙的话 就算了。\n\n注意身体。\n\n——妈妈`},
+{f:'声乐前辈',t:'上次说的事，考虑得怎么样？',d:'10月15日',un:0,b:`智硕啊，\n\n上次跟你提的那个声乐节目，导演组还在等回复。\n\n我知道你在团体回归期，时间很紧。\n\n但这个机会真的很难得。\n\n如果你有兴趣，这周内给我个回复。\n\n——前辈`}
+];
+const PHOTOS=[
+['#1c2a4a,#4b3b7a','🌌','窗外 凌晨 4:12','10月16日 · 工作室窗外的天空，还没亮'],
+['#a56a4a,#e0b48a','☕','两杯热可可','10月16日 · 从聊天里存下来的图，杯身上有名字'],
+['#c9b79c,#efe4d0','🪵','承珉做木工','10月15日 · 承珉非要自己打个架子'],
+['#2f3a46,#5c6b7a','🌉','正洙的视角','10月14日 · 在汉江边拍的，不知道他在看哪里'],
+['#bfe3d0,#eef9f3','🎨','亨準的画','10月15日 · 他最近喜欢用蜡笔'],
+['#7aa1b8,#cfe0ea','🪞','练习室镜子','10月12日 · 衣服上不知道什么时候沾了灰'],
+['#e8a35f,#f6d28b','🎂','生日蛋糕','10月13日 · 大家抢着吃，最后只剩盘子'],
+['#ff9a6b,#6b5bd1','🖼','四宫格','10月11日 · Sound Planet 后台'],
+['#2f3a46,#5c6b7a','🪶','黑色羽毛','10月9日 · 造型试装，他说像乌鸦'],
+['#7aa1b8,#cfe0ea','🤳','合影','10月9日 · 正洙看着镜头，我看着屏幕'],
+['#bfe3d0,#eef9f3','🐈‍⬛','猫','10月8日 · 宿舍楼下的猫，承珉每天都去喂'],
+['#2f87e6,#58a6ef','🌃','夜景','10月7日 · 汉江边，走了很久'],
+['#4b3b7a,#1c2a4a','🌙','月亮','10月6日 · 他发在群里说，这里很适合写歌'],
+['#7b8497,#e9ecf2','🏪','便利店','10月5日 · 凌晨的便利店，一个人'],
+['#c9b79c,#efe4d0','🤵','西装','10月4日 · 拍摄花絮，他那天很安静'],
+['#e8a35f,#f6d28b','🧸','玩偶','10月3日 · 正洙坐在一堆玩偶里发呆'],
+['#2f3a46,#5c6b7a','👕','紫衣','10月2日 · 也是那天拍的，但是没发出去'],
+['#7b8497,#e9ecf2','📱','对镜自拍','10月1日 · 手机壳是新买的'],
+['#ff9a6b,#6b5bd1','🕯','白衣服','9月30日 · 他在听导演讲戏'],
+['#f0a35e,#ffcf6b','📸','侧脸','9月29日 · 拍杂志的时候偷偷拍的'],
+['#d8c3a5,#f4b6c2','🧱','红砖墙','9月28日 · 吃饭的时候，他拿叉子对着我'],
+['#7aa1b8,#cfe0ea','🪟','窗帘','9月27日 · 那天他睡着了'],
+['#bfe3d0,#eef9f3','😴','闭眼','9月26日 · 他笑起来的样子'],
+['#e8a35f,#f6d28b','🚶','背影','9月25日 · 江边，晚风很大'],
+['#ff9a6b,#6b5bd1','🪑','低头','9月24日 · 他很累了，靠在椅子上'],
+['VIDEO:https://b23.tv/b3MLn1s|#2d6f6f,#a1c4c4','🎹','弹键盘','10月10日 · 那天一起在练习室，他弹键盘的样子']
+];
+/* 歌单：根据截图截取，number one girl置顶 */
+const TRACKS=[
+['number one girl','정수 (Cover)','正洙 · 6月26日发布','https://b23.tv/usB3hAF'],
+['i love you too much','Orlando','智硕 · 10月16日添加',null],
+['Suzie Chapstick','Green Day','智硕 · 10月15日添加',null],
+['Gravity','John Mayer','智硕 · 10月14日添加',null],
+['Wake Me Up When September Ends','Green Day','智硕 · 10月13日添加',null],
+['SUCKERPUNCH','All Time Low','智硕 · 10月12日添加',null],
+["Winter's Glow",'KARDI','智硕 · 10月11日添加',null],
+['즐거운 인생 (快乐人生)','吴承根','承珉 · 10月10日添加',null],
+['In Repair','John Mayer','智硕 · 10月9日添加',null],
+['A Little More','Ed Sheeran','智硕 · 10月8日添加',null],
+['スパークル (火花)','RADWIMPS','智硕 · 10月7日添加',null],
+['From The Start','Laufey','正洙 · 10月6日添加',null],
+['Pull Me Under','Dream Theater','智硕 · 10月5日添加',null],
+['Into the Unknown','Panic! At The Disco','智硕 · 10月4日添加',null],
+['Lost in the Woods','Weezer','智硕 · 10月3日添加',null],
+['Guess Who I Saw Today','Samara Joy','智硕 · 10月2日添加',null]
+];
+const SAFARI=[
+['탈색 후 머리 관리 방법','今天 11:20'],
+['如何拒绝前辈的告白 不伤感情','10月12日 02:07'],
+['豚鼠 品种 性格 好养吗','10月12日 01:40'],
+['灰色羊毛围巾 男 保暖','10月12日 01:22'],
+['성수동 오피스텔 월세 야간 치안','10月13日 23:10'],
+['回归前 睡眠 管理 方法','10月15日 04:02'],
+['为什么凌晨的天空是蓝色的','10月16日 03:30'],
+['申请换宿舍 理由 不想伤害队友','10月11日 02:50'],
+['如何和队长保持距离','10月16日 04:12'],
+['喜欢上队友 怎么办','10月9日 03:40'],
+['同队恋爱 被发现 后果','10月9日 03:55'],
+['单恋 怎么走出来','10月10日 01:30']
+];
+const MAPS=[['公司 → 新住处（暂定）','步行 9 分钟'],['24 小时便利店','步行 3 分钟'],['汉江公园（晨跑）','步行 14 分钟'],['公司练习室','常去']];
+const ALARMS=[['06:50','起床 · 工作日',1],['07:10','再起床',1],['23:30','睡觉（认真的）',0]];
+/* Instagram 账号 ID */
+const IGMAIN={u:'zzz_duck',n:'郭智硕',bio:'🐥 Xdinary Heroes · 吉他 / Rap\n回归 D-7',posts:'86',fl:'1.2M',fg:'7',grid:[['#2f3a46,#5c6b7a','☕'],['#ffd94d,#fff2a8','🐥'],['#ff9a6b,#6b5bd1','🖼'],['#e8a35f,#f6d28b','🎂'],['#7aa1b8,#cfe0ea','🪞'],['#0e1a33,#24376b','🌙']]};
+const IGALT={u:'3am.quack',n:'',bio:'不想被看见的时候',posts:'3',fl:'4',fg:'4',grid:[['#1c2a4a,#4b3b7a','🌌','天快亮之前'],['#2f3a46,#5c6b7a','🖼','影子比人先到'],['#a56a4a,#e0b48a','☕','喝完了']]};
+const IGFEED=[
+{u:'jun.hxxn',a:'hj',cap:'练习结束 小鸡是不是有点瘦了 @zzz_duck',emo:'🍗',g:'#ffcf6b,#ffe9a8',lk:'48,201',cm:[['zzz_duck','哈哈哈哈'],['jungsu.0','亨準 你也瘦了 去吃饭'],['odetolove0611','亨準 你又在练习室吃东西']]},
+{u:'jxxy.eon',a:'zy',cap:'炸酱面 six人份 ✌️',emo:'🍜',g:'#e8a35f,#f6d28b',lk:'39,877',cm:[['g.nil_0724','我的是大份'],['jun.hxxn','想吃']]},
+{u:'jungsu.0',a:'js',cap:'一起弹键盘~ 多么温馨的画面呀！',emo:'🎹',g:'#ff9a6b,#ffd9a8',vid:'https://b23.tv/b3MLn1s',lk:'112,340',cm:[['zzz_duck','👍'],['jun.hxxn','哥 帅'],['jxxy.eon','哥！！！'],['zzz_duck','明明是哥弹得更好']]},
+{u:'odetolove0611',a:'cm',cap:'整理完毕 ✨ 舒服',emo:'🧼',g:'#bfe3d0,#eef9f3',lk:'27,018',cm:[['g.nil_0724','辛苦'],['jun.hxxn','哥 你可以不用什么都整理']]},
+{u:'g.nil_0724',a:'ji',cap:'今天练习室 大家辛苦了。明天继续。',emo:'🥁',g:'#4a4a4a,#7a7a7a',lk:'64,322',cm:[['jxxy.eon','内！'],['jun.hxxn','建逸哥最帅'],['jungsu.0','明天见']]},
+{u:'jungsu.0',a:'js',cap:'凌晨的汉江。有人一起吗？',emo:'🌉',g:'#1a2a4a,#4a5a7a',lk:'89,120',cm:[['zzz_duck','……'],['jun.hxxn','哥 你疯了 凌晨三点'],['jungsu.0','@zzz_duck 你来吗']]}
+];
+const IGSTORY=[['jun.hxxn','hj'],['jxxy.eon','zy'],['jungsu.0','js'],['odetolove0611','cm'],['g.nil_0724','ji']];
+const IGVIEWERS=[['hamzzi_1999','🐱','02:41'],['clean_fan_oh','🦊','06:30'],['g.nil_0724','🐶','07:12'],['jun.hxxn','🐰','07:30']];
+const IGDMS=[
+{u:'jungsu.0',emo:'🐱',last:'凉掉的也喝了吗',time:'02:42',un:1,msgs:[['in','10月13日 03:41','今天的月亮 像我们练习室的灯'],['me','10月13日 03:55','嗯 好看'],['in','10月15日 02:10','你也睡不着吗'],['seen','10月15日 02:13',''],['in','10月17日 02:41','喝完了啊'],['in','10月17日 02:42','凉掉的也喝了吗'],['in','10月17日 02:42','你傻不傻'],['seen','10月17日 02:44','']]},
+{u:'jun.hxxn',emo:'🐰',last:'🐥☔',time:'昨天',un:0,msgs:[['in','昨天 23:12','🐥☔'],['me','昨天 23:14','哈哈哈哈'],['in','昨天 23:14','好多了']]},
+{u:'odetolove0611',emo:'🦊',last:'这个推荐给你（视频）',time:'10月14日',un:0,msgs:[['in','10月14日 20:01','这个推荐给你（视频）'],['me','10月14日 20:30','好 我看看']]},
+{u:'g.nil_0724',emo:'🐹',last:'有事随时找哥',time:'10月16日',un:0,msgs:[['in','10月16日 23:40','智硕啊 建逸哥'],['in','10月16日 23:41','正洙那小子 你别理他'],['in','10月16日 23:42','有事随时找哥'],['me','10月17日 00:10','谢谢哥']]}
+];
+const XTW=[
+{h:'bh_news_kr',n:'Xdinary Heroes 情报',t:'Xdinary Heroes 回归 D-7 预告第三弹公开！智硕 吉他 solo 🎸🔥',lk:'12K',rt:'4.1K',tm:'2小时'},
+{h:'duck_zzz_d',n:'智硕 daily 🐥',t:'今天的智硕 小鸡站姿 太可爱了 #郭智硕 ㅋㅋㅋㅋ',lk:'3.3K',rt:'820',tm:'3小时'},
+{h:'luna_in_blue',n:'luna',t:'the way the teaser cuts between all 6 of them… Jiseok\'s guitar solo gives me chills 🥹 #XdinaryHeroes',lk:'6.7K',rt:'1.9K',tm:'4小时'},
+{h:'mj_ja_hq',n:'承珉×亨準 超话',t:'no because Minjae and Taeo sharing an umbrella in the behind cut??? me too??',lk:'2.4K',rt:'611',tm:'5小时'},
+{h:'blue_xhs',n:'小蓝（国内站）',t:'不是我说 这次预告里 正洙和智硕全程没有同框镜头 是我多想了吗',lk:'1.8K',rt:'403',tm:'6小时'},
+{h:'calm_analysis',n:'冷静分析',t:'回复 @blue_xhs 你想多了 预告是分开拍的 别过度解读 大家回归快乐',lk:'960',rt:'122',tm:'6小时'},
+{h:'yugun_fc',n:'周演 FC',t:'忙内在练习室直播吃炸酱面 太治愈了 看完整个人都软了',lk:'5.2K',rt:'1.1K',tm:'7小时'},
+{h:'bluehour_news',n:'Xdinary Heroes 官方',t:'[日程] 10/24 18:00 音源公开 · 10/26 起音乐节目事前录制 · 具体行程以官方为准',lk:'9.1K',rt:'5.6K',tm:'9小时'},
+{h:'jungsu_voice',n:'正洙声音收藏',t:'“智硕啊”这三个字的语气合集 已上传 请准备好纸巾 😭',lk:'8.8K',rt:'3.2K',tm:'10小时'},
+{h:'guitar_pick',n:'吉他手日常',t:'练完这段就睡…结果天亮了。为什么弹吉他时间过得这么快',lk:'2.1K',rt:'340',tm:'11小时'},
+{h:'blue_hour_theory',n:'Blue Hour 分析',t:'等等 正洙昨天凌晨发的那张汉江照片 智硕点赞了吗？我刷到又没了',lk:'4.4K',rt:'1.2K',tm:'12小时'},
+{h:'member_tea',n:'瓜田里的猹',t:'听说某团回归前有人搬宿舍 不知道是不是真的 别问我是谁 我只是路过',lk:'7.8K',rt:'2.3K',tm:'13小时'}
+];
+const XTREND=[
+['#XdinaryHeroes_COMEBACK','3.2万 条帖子'],
+['#郭智硕','1.1万 条帖子'],
+['个人预告','8,420 条帖子'],
+['炸酱面','6,011 条帖子'],
+['#金正洙','4,902 条帖子'],
+['#月光吉他','3,877 条帖子'],
+['#BlueHour','2,410 条帖子']
+];
+const SETINFO=[['名称','智硕的 iPhone'],['型号','iPhone 17'],['iOS 版本','26.0.1'],['存储空间','412 GB / 512 GB'],['电池','84%'],['Apple 账户','doyoon.h***@icloud.com']];
+/* ============================================================
+   工具 & 状态
+   ============================================================ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const pad=n=>String(n).padStart(2,'0');
+const fmt=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60);
+const PIN='0114',NOTEPIN='0626';
+const S={
+ unlocked:false,clock:16*60+36,cur:{},li:{},busy:false,liked:{},
+ ign:'main',igTab:'home',calY:2026,calM:9,calSel:'2026-10-17',
+ call:null,yjRinged:false,playing:false,liveCount:0,missed:3,
+ bombIndex:0, rejectIndex:0, confessionAccepted:false, confessionRejected:false,
+ igConfessionTriggered:false, xBombTriggered:false, returnTo:null
+};
+CHATS.forEach(c=>{
+ S.cur[c.id]=c.msgs.slice();
+ S.li[c.id]=0;
+ c._un=c.unread;
+ if(!c.choices)c.choices=[];
+});
+const chat=id=>CHATS.find(c=>c.id===id);
+const toast=(t)=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800);};
+const nm=w=>w==='me'?'':(P[w]?P[w].n:w);
+const sc=()=>$('#scr');
+const setSB=m=>{$('#phone').dataset.sb=m;};
+function tickUI(){const t=fmt(S.clock);$('#sbt').textContent=t;const lt=$('#lockt');if(lt)lt.textContent=t.replace(/^0/,'');}
+setInterval(()=>{S.clock++;tickUI();},60000);
+const TRIGGERS={};
+const fired=id=>{if(TRIGGERS[id])return false;TRIGGERS[id]=1;return true;};
+/* ============================================================
+   锁屏 & 主屏
+   ============================================================ */
+function lockScreen(){
+ S.unlocked=false;setSB('light');$('#phone').className='phone lock';
+ sc().innerHTML=`<div class="lockwp" data-a="pinpage"></div>
+ <div class="lk"><div class="lkd">10月17日 星期六</div><div class="lkt" id="lockt">${fmt(S.clock).replace(/^0/,'')}</div>
+ <div class="lklang">🌐 简体中文</div>
+ <div class="notis"><div class="noti" data-a="pinpage"><div class="ni">☑️</div><div class="nb"><b>金正洙的生日 🎂</b><span>6月26日</span></div></div>
+ <div class="noti" data-a="pinpage"><div class="ni" style="background:#ffe14a">💬</div><div class="nb"><b>金正洙</b><span>…回我一下 好不好</span></div></div></div>
+ <div class="lkb"><div class="lkbtn">🔦</div><div class="swipe" data-a="pinpage">向上轻扫以打开</div><div class="lkbtn">📷</div></div></div>`;
+}
+let pinBuf='';
+function pinPage(){
+ pinBuf='';
+ sc().innerHTML=`<div class="lockwp"></div><div class="pinw"><div class="pt">输入密码</div><div class="dots" id="dots"><i></i><i></i><i></i><i></i></div><div class="pmsg" id="pmsg">&nbsp;</div>
+ <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-a="pk" data-v="${n}">${n}</button>`).join('')}<button class="gh"></button><button data-a="pk" data-v="0">0</button><button class="gh" data-a="pdel">⌫</button></div>
+ <div class="pcancel" data-a="lock">取消</div></div>`;
+}
+function pinKey(d){
+ if(pinBuf.length>=4)return;
+ pinBuf+=d;
+ [...document.querySelectorAll('#dots i')].forEach((e,i)=>e.classList.toggle('f',i<pinBuf.length));
+ if(pinBuf.length===4){
+  if(pinBuf===PIN){
+   setTimeout(()=>{
+    S.unlocked=true;home();
+    if(!S.yjTimer)S.yjTimer=setTimeout(()=>incoming('js'),95000);
+   },180);
+  }else{
+   const dotsEl=$('#dots');dotsEl.classList.add('shake');$('#pmsg').textContent='密码错误，请重试';
+   setTimeout(()=>{pinBuf='';dotsEl.classList.remove('shake');[...dotsEl.children].forEach(e=>e.classList.remove('f'));const pm=$('#pmsg');if(pm)pm.innerHTML='&nbsp;';},520);
+  }
+ }
+}
+const ICONS={
+ ig:['Instagram','📷','linear-gradient(135deg,#f9a03f,#e1306c 55%,#7c3aed)'],
+ photos:['照片','🌼','linear-gradient(#fff,#cfe9ff)'],
+ mail:['邮件','✉️','linear-gradient(#34a9ff,#0a63e6)'],
+ cal:['日历','17','#fff'],
+ clock:['时钟','🕓','#000'],
+ notes:['备忘录','📝','linear-gradient(#ffe27a,#fff)'],
+ weather:['天气','⛅','linear-gradient(#58b1ff,#2a6fe0)'],
+ settings:['设置','⚙️','linear-gradient(#b9bdc6,#7d828c)'],
+ maps:['地图','📍','linear-gradient(#e6f2dc,#f7f4ea)'],
+ x:['X','𝕏','#0b0b0b'],
+ phone:['','📞','linear-gradient(#5be07d,#27b44b)'],
+ safari:['','🧭','#fff'],
+ kakao:['','💬','#fee500'],
+ music:['','♪','linear-gradient(#ff6b8a,#f2273f)']
+};
+function icon(k,badge){
+ const [n,g,bg]=ICONS[k];
+ const cal=k==='cal'?`<div class="calic"><small>星期六</small><b>17</b></div>`:`<span>${g}</span>`;
+ return `<div class="app" data-a="open" data-v="${k}"><div class="ic" style="background:${bg}">${cal}${badge?`<i class="bd">${badge}</i>`:''}</div>${n?`<p>${n}</p>`:''}</div>`;
+}
+const kakaoBadge=()=>CHATS.reduce((a,c)=>a+(c._un||0),0);
+function home(){
+ if(S.unlocked&&!fired('final')&&(TRIGGERS.call_ig||TRIGGERS.call_x||TRIGGERS.call_vm))jsCall('final');
+ setSB('light');$('#phone').className='phone home';
+ const ev=EVENTS['2026-10-17'].slice(0,2);
+ sc().innerHTML=`<div class="homewp"></div><div class="hm">
+ <div class="wid">
+  <div class="w w1"><b class="r">星期六</b><div class="big">17</div>${ev.map(e=>`<div class="we"><i></i><div><b>${e[1]}</b><span>${e[0]}</span></div></div>`).join('')}</div>
+  <div class="w w2"><b>首尔 ↗</b><div class="big">18°</div><p>大部晴朗<br>最高21° 最低12°</p><span class="sun">☀️</span></div>
+ </div>
+ <div class="grid">${icon('ig')}${icon('photos')}${icon('mail',MAILS.filter(m=>m.un).length)}${icon('cal')}${icon('clock')}${icon('notes')}${icon('weather')}${icon('settings')}${icon('maps')}${icon('x')}</div>
+ <div class="srch">🔍 搜索</div>
+ <div class="dock">${icon('phone',S.missed||'')}${icon('safari')}${icon('kakao',kakaoBadge()||'')}${icon('music')}</div></div>`;
+}
+function open(k){
+ const apps={ig:igApp,photos:photosApp,mail:mailApp,cal:calApp,clock:clockApp,notes:notesApp,weather:weatherApp,settings:settingsApp,maps:mapsApp,x:xApp,phone:phoneApp,safari:safariApp,kakao:kakaoList,music:musicApp};
+ if(apps[k])apps[k]();
+}
+const bar=(t,back='home',right='')=>`<div class="nav"><span class="bk" data-a="${back}">‹ ${back==='home'?'主屏幕':'返回'}</span><b>${t}</b><span class="rt">${right}</span></div>`;
+/* ============================================================
+   Kakao 列表
+   ============================================================ */
+function kakaoList(){
+ setSB('dark');$('#phone').className='phone kk';
+ const rows=CHATS.map(c=>{
+  const m=S.cur[c.id].filter(x=>x.k!=='sys').slice(-1)[0];
+  let pv='';
+  if(m){
+   if(m.k==='del')pv='已删除的消息';
+   else if(m.k==='img')pv='（照片）'+m.x.replace(/^IMG:[^|]+\|/,'');
+   else if(m.k==='sticker')pv='（表情包）';
+   else pv=m.x;
+  }
+  return `<div class="cr" data-a="chat" data-v="${c.id}">${cav(c,52)}<div class="cm"><div class="ct"><b>${esc(c.title)}</b>${c.group?`<em>${c.group}</em>`:''}<span>${c._un?m?m.t:c.time:c.time}</span></div><div class="cp"><span>${esc(pv)}</span>${c._un?`<i class="un">${c._un}</i>`:''}</div></div></div>`;
+ }).join('');
+ sc().innerHTML=`<div class="knav"><span class="bk" data-a="home">‹ 主屏幕</span></div><div class="khead"><h1>聊天</h1><span>🔍 💬 ⚙️</span></div><div class="clist">${rows}</div>
+ <div class="ktab"><span>👤<small>好友</small></span><span class="on">💬<small>聊天</small></span><span>🙂<small>开放聊天</small></span><span>🛍<small>购物</small></span><span>⋯<small>更多</small></span></div>`;
+}
+/* ============================================================
+   聊天渲染
+   ============================================================ */
+function dateRow(x){return `<div class="dsep">📅 ${x}</div>`;}
+function msgRow(m,p,n,c){
+ if(m.k==='sys')return dateRow(m.x);
+ const me=m.w==='me',first=!p||p.k==='sys'||p.w!==m.w,last=!n||n.k==='sys'||n.w!==m.w||n.t!==m.t;
+ let body;
+ if(m.k==='del')body=`<div class="bub del">已删除的消息</div>`;
+ else if(m.k==='sticker'){
+  const sp=m.x.split(' ');
+  body=`<div class="stk"><div>${sp[0]}</div><small>${esc(sp.slice(1).join(' '))}</small></div>`;
+ }else if(m.k==='img'){
+  const match=m.x.match(/^IMG:([^|]+)\|(.*)$/);
+  if(match){
+   const txt=match[2];
+   body=`<div class="bub imgb">${gradBox('#eee','🖼',34)}<p>${esc(txt)}</p></div>`;
+  }else{
+   const h=[...m.x].reduce((a,ch)=>a+ch.charCodeAt(0),0);
+   const pal=['#7aa1b8,#cfe0ea','#e8a35f,#f6d28b','#a56a4a,#e0b48a','#bfe3d0,#eef9f3','#c9b79c,#efe4d0'][h%5];
+   body=`<div class="bub imgb">${gradBox(pal,['🖼','📷','🍜','☕','🌆'][h%5],34)}<p>${esc(m.x)}</p></div>`;
+  }
+ }else{
+  body=`<div class="bub ${me?'me':''}">${esc(m.x)}</div>`;
+ }
+ const tm=last?`<span class="tm">${m.t}</span>`:'';
+ if(me)return `<div class="mr r">${tm}${body}</div>`;
+ return `<div class="mr l">${first?av(m.w,38):'<div class="sp"></div>'}<div class="mc">${first?`<div class="mn">${esc(nm(m.w))}</div>`:''}<div class="mrow">${body}${tm}</div></div></div>`;
+}
+function renderMsgs(scroll=true){
+ const c=chat(S.cr),a=S.cur[c.id];
+ const box=$('#msgs');if(!box)return;
+ box.innerHTML=a.map((m,i)=>msgRow(m,a[i-1],a[i+1],c)).join('');
+ if(scroll)box.scrollTop=box.scrollHeight;
+}
+function renderChoices(){
+ const c=chat(S.cr);
+ const wrap=$('#choices');
+ if(!wrap)return;
+ if(!c||!c.choices||!c.choices.length){wrap.innerHTML='';return;}
+ const pending=c.choices.filter(ch=>!S['ch_'+c.id+'_'+ch.at]);
+ if(!pending.length){wrap.innerHTML='';return;}
+ const ch=pending[0];
+ wrap.innerHTML=ch.choices.map((o,i)=>`<button class="choice" data-a="choice" data-v="${c.id}|${ch.at}|${i}">${esc(o.t)}</button>`).join('');
+}
+function chatPage(id){
+ S.cr=id;
+ const c=chat(id);
+ if(!c)return;
+ c._un=0;
+ setSB('dark');
+ $('#phone').className='phone kc';
+ sc().innerHTML=`<div class="chd"><span class="bk" data-a="kakao">‹ ${CHATS.reduce((a,x)=>a+(x._un||0),0)||''}</span><b>${esc(c.title)}${c.group?` <em>${c.group}</em>`:''}</b><span class="rt">🔍 ☰</span></div>
+ <div class="msgs" id="msgs" data-a="live"></div>
+ <div class="hint" id="hint" data-a="live"></div>
+ <div class="choices" id="choices"></div>
+ <form class="inp" id="inp"><span class="plus">＋</span><input id="txt" autocomplete="off" placeholder="输入消息"><span class="emo">☺</span></form>`;
+ renderMsgs();
+ updHint();
+ renderChoices();
+ const inp=$('#inp');
+ if(inp)inp.addEventListener('submit',e=>{
+  e.preventDefault();
+  const txt=$('#txt');if(!txt)return;
+  const v=txt.value.trim();
+  if(v){txt.value='';sendMsg(v);}
+ });
+ const txt=$('#txt');
+ if(txt)txt.addEventListener('focus',()=>{setTimeout(()=>{const e=$('#msgs');if(e)e.scrollTop=e.scrollHeight;},200);});
+}
+function updHint(){
+ const c=chat(S.cr),h=$('#hint');
+ if(!h)return;
+ const left=c&&c.live?c.live.length-S.li[c.id]:0;
+ h.classList.toggle('on',left>0&&!S.busy);
+ h.textContent=left>0?'● 轻点对话框 查看新消息':'';
+}
+function pushMsg(c,m){
+ S.cur[c.id].push(m);
+ if(S.cr===c.id&&$('#msgs')){
+  renderMsgs();
+  const l=$('#msgs').lastElementChild;
+  if(l)l.classList.add('pop');
+ }
+}
+async function typing(ms,w,c){
+ const box=$('#msgs');
+ if(!box||S.cr!==c.id)return sleep(ms);
+ const d=document.createElement('div');
+ d.className='mr l tp';
+ d.innerHTML=`${av(w,38)}<div class="mc"><div class="mrow"><div class="bub"><i class="td"></i><i class="td"></i><i class="td"></i></div></div></div>`;
+ box.appendChild(d);box.scrollTop=box.scrollHeight;
+ await sleep(ms);
+ d.remove();
+}
+async function live(){
+ if(S.busy)return;
+ const c=chat(S.cr);
+ if(!c||!c.live||S.li[c.id]>=c.live.length){toast('这里暂时没有新消息了');return;}
+ S.busy=true;updHint();
+ const batch=c.live[S.li[c.id]++];
+ S.liveCount++;
+ let lastW=(batch.find(x=>!x.ms)||['js'])[0];
+ for(const it of batch){
+  if(it.ms){await typing(it.ms,lastW,c);continue;}
+  await sleep(450);
+  pushMsg(c,{w:it[0],t:it[1],x:it[2],k:it[3]||''});
+  lastW=it[0];
+ }
+ S.busy=false;
+ updHint();
+ if(S.cr==='js'&&S.li.js===c.live.length&&!S.yjRinged){
+  S.yjRinged=true;
+  setTimeout(()=>incoming('js'),4000);
+ }
+}
+async function sendMsg(v){
+ const c=chat(S.cr);
+ if(!c||S.busy)return;
+ S.busy=true;
+ pushMsg(c,{w:'me',t:fmt(S.clock),x:v});
+ const sus=v.length>16||/[您请先生]|\.{3,}|[A-Za-z]{7,}|[?？]{2,}/.test(v);
+ const pool=sus?(c.sus||c.rxs):(c.ok||c.rx);
+ await sleep(900);
+ const who=c.group?null:c.id;
+ const items=sus?pool.slice(0,c.group?2:1):[pick(pool)];
+ for(const it of items){
+  const w=Array.isArray(it)?it[0]:(who||'js');
+  const x=Array.isArray(it)?it[1]:it;
+  await typing(1100,w,c);
+  pushMsg(c,{w,t:fmt(S.clock),x});
+ }
+ S.busy=false;
+ updHint();
+ renderChoices();
+}
+/* ============================================================
+   选择题
+   ============================================================ */
+async function handleChoice(v){
+ const [cid,at,idx]=v.split('|');
+ const c=chat(cid);
+ if(!c||!c.choices)return;
+ const ch=c.choices.find(x=>String(x.at)===at);
+ if(!ch)return;
+ const opt=ch.choices[+idx];
+ if(!opt)return;
+ S['ch_'+cid+'_'+at]=1;
+ pushMsg(c,{w:'me',t:fmt(S.clock),x:opt.t});
+ const wrap=$('#choices');
+ if(wrap)wrap.innerHTML='';
+ S.busy=true;
+ await sleep(600);
+ for(const r of opt.r){
+  const w=r[0],x=r[1];
+  await typing(1100,w,c);
+  pushMsg(c,{w,t:fmt(S.clock),x});
+ }
+ S.busy=false;
+ updHint();
+ renderChoices();
+}
+/* ============================================================
+   正洙轰炸
+   ============================================================ */
+async function startBomb(){
+ if(S.bombIndex>=BOMB_SETS.length)return;
+ const set=BOMB_SETS[S.bombIndex];
+ S.bombIndex++;
+ let c=chat('bomb');
+ if(!c){
+  c={id:'bomb',title:'金正洙（轰炸）',ava:'js',time:'16:47',unread:0,msgs:[],live:[],rx:[['js','…嗯']],rxs:[['js','…']],choices:[]};
+  CHATS.push(c);
+  S.cur[c.id]=[];
+  S.li[c.id]=0;
+ }
+ c.msgs=[];
+ S.cur[c.id]=[];
+ S.li[c.id]=0;
+ chatPage('bomb');
+ S.busy=true;
+ for(const [t,x] of set){
+  await sleep(700);
+  pushMsg(c,{w:'js',t,x});
+ }
+ S.busy=false;
+ renderChoices();
+}
+/* ============================================================
+   电话
+   ============================================================ */
+const CONTACTS=['js','cm','hj','zy','ji','mg','mom','sr','dc','hs','jk'];
+function phoneApp(tab='rec'){
+ setSB('dark');$('#phone').className='phone ph';S.missed=0;
+ const tabs=[['fav','⭐','个人收藏'],['rec','🕓','最近通话'],['con','👤','通讯录'],['key','⌗','拨号键盘'],['vm','📼','语音信箱']];
+ let body='';
+ if(tab==='rec'){
+  body=`<h1>最近通话</h1>`+RECENTS.map(r=>`<div class="pr" data-a="call" data-v="${r.id}">${av(r.id,40)}<div class="pm"><b class="${r.dir==='miss'?'red':''}">${esc(P[r.id].n)}${r.n>1?` (${r.n})`:''}</b><small>${r.dir==='miss'?'未接来电':r.dir==='in'?'呼入':'呼出'}</small></div><span>${r.t}</span></div>`).join('');
+ }else if(tab==='con'||tab==='fav'){
+  const list=tab==='fav'?['js','cm','mg','mom']:CONTACTS;
+  body=`<h1>${tab==='fav'?'个人收藏':'通讯录'}</h1>`+list.map(id=>`<div class="pr" data-a="call" data-v="${id}">${av(id,40)}<div class="pm"><b>${esc(P[id].n)}</b><small>手机</small></div><span>📞</span></div>`).join('');
+ }else if(tab==='vm'){
+  body=`<h1>语音信箱</h1><div class="pr vm" data-a="vm"><div class="pm"><b>金正洙</b><small>10月16日 02:03 · 0:23</small></div><span>▶︎</span></div><div class="vmx" id="vmx"></div><div class="pr vm"><div class="pm"><b>未知号码</b><small>10月9日 · 0:04</small></div><span>▶︎</span></div>`;
+ }else{
+  body=`<div class="keyp"><div class="kdisp" id="kd">&nbsp;</div><div class="pad2">${['1','2','3','4','5','6','7','8','9','*','0','#'].map(n=>`<button data-a="kdial" data-v="${n}">${n}</button>`).join('')}</div><button class="callbtn" data-a="kcall">📞</button></div>`;
+ }
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="home">‹ 主屏幕</span></div><div class="pbody">${body}</div><div class="ptab">${tabs.map(t=>`<span class="${t[0]===tab?'on':''}" data-a="ptab" data-v="${t[0]}">${t[1]}<small>${t[2]}</small></span>`).join('')}</div>`;
+}
+let kbuf='';
+function startCall(id,incomingCall,customLines){
+ const spec=incomingCall?null:CALLS[id];
+ S.callId=id;
+ setSB('light');
+ $('#phone').className='phone cl';
+ const lines=customLines||(incomingCall?JS_CONFESSION:(spec?spec.lines:[]));
+ sc().innerHTML=`<div class="callbg"></div><div class="cw">${av(id,118)}<h2>${esc(P[id].n)}</h2><p id="cst">${incomingCall?'通话中':'正在呼叫…'}</p><div class="cap" id="cap"></div>
+ <div class="cbtns"><div><button data-a="cfx" data-v="扬声器">🔊</button><small>扬声器</small></div><div><button data-a="cfx" data-v="FaceTime">📹</button><small>FaceTime</small></div><div><button data-a="cfx" data-v="静音">🎙</button><small>静音</small></div>
+ <div><button data-a="cadd">＋</button><small>添加通话</small></div><div><button class="end" data-a="cend">📵</button><small>结束</small></div><div><button data-a="cfx" data-v="键盘">⠿</button><small>拨号键盘</small></div></div></div>`;
+ const token=S.call={};
+ (async()=>{
+  if(!incomingCall){
+   await sleep(spec?spec.ring:3000);
+   if(S.call!==token)return;
+   if(spec&&spec.none){
+    const st=$('#cst');if(st)st.textContent=spec.tip;
+    await sleep(1600);
+    if(S.call!==token)return;
+    endCall(true);
+    if(id==='js'&&!S.yjRinged){
+     S.yjRinged=true;
+     setTimeout(()=>incoming('js'),7000);
+    }
+    return;
+   }
+   const st=$('#cst');if(st)st.textContent='通话中 0:01';
+  }
+  let t0=Date.now();
+  const tm=setInterval(()=>{
+   if(S.call!==token){clearInterval(tm);return;}
+   const s=Math.floor((Date.now()-t0)/1000);
+   const st=$('#cst');
+   if(st)st.textContent='通话中 '+Math.floor(s/60)+':'+pad(s%60);
+  },1000);
+  for(const [d,w,x] of lines){
+   await sleep(d);
+   if(S.call!==token)return;
+   const cp=$('#cap');
+   if(!cp)return;
+   cp.insertAdjacentHTML('beforeend',`<p class="cl">${esc(x)}</p>`);
+   cp.scrollTop=cp.scrollHeight;
+  }
+  await sleep(2200);
+  if(S.call===token){
+   clearInterval(tm);
+   const st=$('#cst');if(st)st.textContent='通话结束';
+   await sleep(1200);
+   if(S.call===token)endCall(true);
+  }
+ })();
+}
+function endCall(back){S.call=null;if(back)phoneApp('rec');else home();}
+function incoming(id,key){
+ if(!S.unlocked||S.call||document.getElementById('inc'))return;
+ const d=document.createElement('div');
+ d.id='inc';d.className='inc';
+ d.innerHTML=`<div class="il">${av(id,42)}<div><b>${esc(P[id].n)}</b><small>手机 · 来电</small></div></div><div class="ib"><button class="dn" data-a="idecline">✕</button><button class="ac" data-a="iaccept">✓</button></div>`;
+ S.incKey=key||'confession';
+ const p=$('#phone');if(p)p.appendChild(d);
+}
+/* ============================================================
+   备忘录
+   ============================================================ */
+function notesApp(){
+ setSB('dark');$('#phone').className='phone nt';
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="home">‹ 主屏幕</span><b></b><span class="rt"></span></div><div class="pbody"><h1>备忘录</h1><div class="nl">${NOTES.map(n=>`<div class="ni2" data-a="note" data-v="${n.id}"><b>${n.locked?'🔒 ':''}${esc(n.title)}</b><span>${n.date}${n.locked?' · 已锁定':' · '+esc(n.body.split('\n')[0].slice(0,18))}</span></div>`).join('')}</div></div>`;
+}
+function noteOpen(id){
+ const n=NOTES.find(x=>x.id===id);
+ if(!n)return;
+ if(n.locked&&!S['u_'+id]){notePin(id);return;}
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="notes">‹ 备忘录</span><b></b><span class="rt"></span></div><div class="pbody note"><small>${n.date}</small><h2>${esc(n.title)}</h2><pre>${esc(n.body)}</pre></div>`;
+}
+let nb='';
+function notePin(id){
+ nb='';
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="notes">‹ 备忘录</span><b></b><span class="rt"></span></div><div class="pbody npw"><div class="lk2">🔒</div><h3>此备忘录已锁定</h3><p>输入备忘录密码<br><small>提示：那一天</small></p><div class="dots d2" id="dots"><i></i><i></i><i></i><i></i></div><div class="pmsg" id="pmsg">&nbsp;</div><div class="pad n2">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-a="nk" data-v="${n}" data-n="${id}">${n}</button>`).join('')}<button class="gh"></button><button data-a="nk" data-v="0" data-n="${id}">0</button><button class="gh"></button></div></div>`;
+}
+function noteKey(d,id){
+ if(nb.length>=4)return;
+ nb+=d;
+ [...document.querySelectorAll('#dots i')].forEach((e,i)=>e.classList.toggle('f',i<nb.length));
+ if(nb.length===4){
+  if(nb===NOTEPIN){
+   S['u_'+id]=1;
+   setTimeout(()=>noteOpen(id),200);
+  }else{
+   const dotsEl=$('#dots');dotsEl.classList.add('shake');$('#pmsg').textContent='密码错误';
+   setTimeout(()=>{
+    nb='';
+    dotsEl.classList.remove('shake');
+    [...dotsEl.children].forEach(e=>e.classList.remove('f'));
+    const pm=$('#pmsg');if(pm)pm.innerHTML='&nbsp;';
+   },520);
+  }
+ }
+}
+/* ============================================================
+   Instagram
+   ============================================================ */
+function igApp(){
+ setSB('dark');$('#phone').className='phone ig';
+ const alt=S.ign==='alt',acc=alt?IGALT:IGMAIN,tab=S.igTab;
+ let body='';
+ if(tab==='home'){
+  body=`<div class="stories">${IGSTORY.map(s=>`<div class="st"><div class="ring">${av(s[1],54)}</div><small>${s[0]}</small></div>`).join('')}</div>`+
+  IGFEED.map((p,i)=>`<div class="post"><div class="ph">${av(p.a,30)}<b>${p.u}</b></div>${
+   p.vid?`<div class="gb" style="background:linear-gradient(145deg,${p.g.split(',')[0]},${p.g.split(',')[1]});flex-direction:column"><span style="font-size:50px">${p.emo}</span><a href="${p.vid}" target="_blank" style="margin-top:10px;background:rgba(0,0,0,.5);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;text-decoration:none">▶ 点击播放视频</a></div>`:gradBox(p.g,p.emo,90)
+  }<div class="pa"><span data-a="like" data-v="${i}" class="${S.liked[i]?'liked':''}">${S.liked[i]?'❤️':'🤍'}</span> 💬 ✈️</div><div class="pc"><b>좋아요 ${p.lk}개</b><p><b>${p.u}</b> ${esc(p.cap)}</p>${p.cm.map(c=>`<p class="cm2"><b>${c[0]}</b> ${esc(c[1])}</p>`).join('')}</div></div>`).join('');
+ }else if(tab==='me'){
+  body=`<div class="prof"><div class="pt2">${av('me',78)}<div class="stat"><b>${acc.posts}</b><small>帖子</small></div><div class="stat"><b>${acc.fl}</b><small>粉丝</small></div><div class="stat"><b>${acc.fg}</b><small>关注</small></div></div><p class="bio"><b>${acc.n||acc.u}</b><br>${esc(acc.bio).replace(/\n/g,'<br>')}</p>${alt?`<button class="sbtn" data-a="story">查看密友快拍</button>`:''}<div class="pg">${acc.grid.map(g=>gradBox(g[1],g[2],42)).join('')}</div></div>`;
+ }else if(tab==='dm'){
+  body=alt?IGDMS.map((d,i)=>`<div class="dmr" data-a="dm" data-v="${i}"><div class="av" style="width:48px;height:48px;background:#e5e7eb"><span>${d.emo}</span></div><div class="dmm"><b>${d.u}</b><small>${esc(d.last)} · ${d.time}</small></div>${d.un?'<i class="un2"></i>':''}</div>`).join(''):`<div class="empty">主账号私信暂时为空<br><small>点右上角用户名切换账号</small></div>`;
+ }else if(tab==='dmv'){
+  const d=IGDMS[S.dm];
+  if(!d){S.igTab='dm';igApp();return;}
+  body=`<div class="dmh" data-a="igt" data-v="dm">‹ ${d.u}</div><div class="dmc">${d.msgs.map(m=>m[0]==='seen'?`<div class="sn">已读 · ${m[1]}</div>`:`<div class="db ${m[0]}"><small>${m[1]}</small><p>${esc(m[2])}</p></div>`).join('')}</div>`;
+ }
+ sc().innerHTML=`<div class="igh"><span class="bk" data-a="home">‹</span><b data-a="swig">${acc.u} ⌄</b><span>♡ ✈︎</span></div><div class="igb">${body}</div><div class="igt">${[['home','🏠'],['dm','✈️'],['me','👤']].map(t=>`<span data-a="igt" data-v="${t[0]}" class="${tab===t[0]||(tab==='dmv'&&t[0]==='dm')?'on':''}">${t[1]}</span>`).join('')}</div>`;
+}
+function storyView(){
+ if(!S.igConfessionTriggered){
+  S.igConfessionTriggered=true;
+  setTimeout(()=>{
+   const js=chat('js');
+   pushMsg(js,{w:'js',t:fmt(S.clock),x:'你小号发的月亮。'});
+   pushMsg(js,{w:'js',t:fmt(S.clock),x:'我看到了。'});
+   pushMsg(js,{w:'js',t:fmt(S.clock),x:'只有一张 没有配文 我就知道是你。'});
+   pushMsg(js,{w:'js',t:fmt(S.clock),x:'……别删。'});
+   toast('金正洙发来了消息');
+   TRIGGERS.call_ig=1;
+  },1200);
+ }
+ const d=document.createElement('div');
+ d.className='sov';
+ d.innerHTML=`<div class="sbox">${gradBox('#1c2a4a,#4b3b7a','🌌',110)}<p class="scap">天快亮之前</p></div><div class="sv"><b>已读 ${IGVIEWERS.length}</b>${IGVIEWERS.map(v=>`<div class="svr"><span class="av" style="width:34px;height:34px;background:#e5e7eb;display:flex;align-items:center;justify-content:center">${v[1]}</span><b>${v[0]}</b><small>${v[2]}</small></div>`).join('')}</div><div class="sx" data-a="sclose">✕</div>`;
+ const p=$('#phone');if(p)p.appendChild(d);
+}
+/* ============================================================
+   X
+   ============================================================ */
+function xApp(tab='tl'){
+ setSB('dark');$('#phone').className='phone x';
+ const body=tab==='tl'?XTW.map((t,i)=>`<div class="tw"><div class="xa">${['🎸','🐥','🌙','☂️','🔍','🧠','🐶','📅','🎤','🪕','🌉','🍵'][i%12]}</div><div class="xt"><b>${esc(t.n)}</b> <small>@${t.h} · ${t.tm}</small><p data-a="xpost" data-v="${i}">${esc(t.t)}</p><div class="xm"><span>💬</span><span>🔁 ${t.rt}</span><span data-a="xlike" data-v="${i}" class="${S.liked['x'+i]?'liked':''}">${S.liked['x'+i]?'❤️':'🤍'} ${t.lk}</span></div></div></div>`).join(''):`<div class="tr"><h3>正在讨论</h3>${XTREND.map((t,i)=>`<div class="trr"><small>${i+1} · 趋势</small><b>${t[0]}</b><small>${t[1]}</small></div>`).join('')}</div>`;
+ sc().innerHTML=`<div class="xh"><span class="bk" data-a="home">‹</span><b class="xl">𝕏</b><span></span></div><div class="xtabs"><span class="${tab==='tl'?'on':''}" data-a="xtab" data-v="tl">为你推荐</span><span class="${tab==='tr'?'on':''}" data-a="xtab" data-v="tr">趋势</span></div><div class="xb">${body}</div>`;
+}
+/* ============================================================
+   照片
+   ============================================================ */
+function photosApp(){
+ setSB('dark');$('#phone').className='phone pl';
+ sc().innerHTML=`${bar('照片')}<div class="pbody"><h1>最近项目</h1><div class="pgrid">${PHOTOS.map((p,i)=>{
+  if(p[0].startsWith('VIDEO:')){
+   const url=p[0].split('|')[0].replace('VIDEO:','');
+   return `<div data-a="video" data-v="${url}" style="position:relative">${gradBox(p[1],p[2],34)}<span style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 5px;border-radius:4px">▶ 视频</span></div>`;
+  }
+  return `<div data-a="photo" data-v="${i}">${gradBox(p[0],p[1],34)}</div>`;
+ }).join('')}</div></div>`;
+}
+function photoView(i){
+ const p=PHOTOS[i];if(!p)return;
+ if(p[0].startsWith('VIDEO:')){
+  const url=p[0].split('|')[0].replace('VIDEO:','');
+  sc().innerHTML=`<div class="nav"><span class="bk" data-a="photos">‹ 照片</span><b>${p[2]}</b></div><div class="pv">${gradBox(p[1],'🎹',140)}<p>${p[3]}</p><a href="${url}" target="_blank" style="display:block;text-align:center;padding:10px;background:#0a7aff;color:#fff;border-radius:10px;text-decoration:none">▶ 在 Bilibili 观看视频</a></div>`;
+ }else{
+  sc().innerHTML=`<div class="nav"><span class="bk" data-a="photos">‹ 照片</span><b>${p[2]}</b></div><div class="pv">${gradBox(p[0],p[1],140)}<p>${p[3]}</p></div>`;
+ }
+}
+/* ============================================================
+   邮件
+   ============================================================ */
+function mailApp(){
+ setSB('dark');$('#phone').className='phone ml';
+ sc().innerHTML=`${bar('收件箱')}<div class="pbody"><h1>收件箱</h1>${MAILS.map((m,i)=>`<div class="mail" data-a="mailv" data-v="${i}">${m.un?'<i class="ud"></i>':''}<b>${esc(m.f)}</b><span>${m.d}</span><p>${esc(m.t)}</p><small>${esc(m.b.slice(0,40).replace(/\n/g,' '))}…</small></div>`).join('')}</div>`;
+}
+function mailView(i){
+ const m=MAILS[i];if(!m)return;
+ m.un=0;
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="mail">‹ 收件箱</span><b></b></div><div class="pbody note"><h2>${esc(m.t)}</h2><small>发件人：${esc(m.f)} · ${m.d}</small><pre>${esc(m.b)}</pre></div>`;
+}
+/* ============================================================
+   日历
+   ============================================================ */
+function calApp(){
+ setSB('dark');$('#phone').className='phone cal';
+ const y=S.calY,m=S.calM;
+ const first=new Date(y,m,1).getDay();
+ const days=new Date(y,m+1,0).getDate();
+ const cells=[];
+ for(let i=0;i<first;i++)cells.push('<span></span>');
+ for(let d=1;d<=days;d++){
+  const k=`${y}-${pad(m+1)}-${pad(d)}`;
+  cells.push(`<span class="d ${k===S.calSel?'sel':''} ${k==='2026-10-17'?'today':''}" data-a="cday" data-v="${k}">${d}${EVENTS[k]?'<i></i>':''}</span>`);
+ }
+ const evs=EVENTS[S.calSel]||[];
+ sc().innerHTML=`${bar(y+'年'+(m+1)+'月','home','<span data-a="cprev">‹</span> <span data-a="cnext">›</span>')}<div class="pbody"><div class="cg">${['日','一','二','三','四','五','六'].map(w=>`<small>${w}</small>`).join('')}${cells.join('')}</div><div class="cev"><h3>${S.calSel}</h3>${evs.length?evs.map(e=>`<div class="ce"><b>${e[0]}</b><span>${esc(e[1])}</span></div>`).join(''):'<p class="mut">没有日程</p>'}</div></div>`;
+}
+/* ============================================================
+   时钟 / 天气 / 设置 / 地图 / Safari / 音乐
+   ============================================================ */
+function clockApp(){
+ setSB('light');$('#phone').className='phone clk';
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="home">‹ 主屏幕</span><b>闹钟</b><span class="rt"></span></div><div class="pbody">${ALARMS.map(a=>`<div class="al"><div><big>${a[0]}</big><small>${a[1]}</small></div><i class="${a[2]?'on':''}"></i></div>`).join('')}</div>`;
+}
+function weatherApp(){
+ setSB('light');$('#phone').className='phone wx';
+ sc().innerHTML=`<div class="nav"><span class="bk" data-a="home">‹ 主屏幕</span><b></b></div><div class="wxb"><h2>首尔</h2><div class="wt">18°</div><p>大部晴朗　最高21° 最低12°</p><div class="wrow">${['现在 18°','17时 18°','18时 16°','19时 15°','20时 14°','21时 13°'].map(x=>`<span>${x}</span>`).join('')}</div><p class="wn">晚间将转凉，注意保暖。</p></div>`;
+}
+function settingsApp(){
+ setSB('dark');$('#phone').className='phone st';
+ sc().innerHTML=`${bar('设置')}<div class="pbody"><h1>设置</h1><div class="sl">${SETINFO.map(r=>`<div class="sr"><span>${r[0]}</span><b>${esc(r[1])}</b></div>`).join('')}<div class="sr"><span>屏幕使用时间</span><b>KakaoTalk 4小时12分</b></div><div class="sr"><span>勿扰模式</span><b>练习中</b></div></div></div>`;
+}
+function mapsApp(){
+ setSB('dark');$('#phone').className='phone mp';
+ sc().innerHTML=`${bar('地图')}<div class="pbody"><div class="mapv"></div>${MAPS.map(m=>`<div class="mrr"><b>${esc(m[0])}</b><small>${m[1]}</small></div>`).join('')}</div>`;
+}
+function safariApp(){
+ setSB('dark');$('#phone').className='phone sf';
+ sc().innerHTML=`${bar('Safari')}<div class="pbody"><h1>最近搜索</h1>${SAFARI.map(s=>`<div class="mrr"><b>${esc(s[0])}</b><small>${s[1]}</small></div>`).join('')}</div>`;
+}
+function musicApp(){
+ setSB('dark');$('#phone').className='phone ms';
+ sc().innerHTML=`${bar('资料库')}<div class="pbody"><h1>共享歌单 · 2</h1>${TRACKS.map((t,i)=>`<div class="tk" data-a="play" data-v="${i}"><div class="tcv">♪</div><div><b>${esc(t[0])}</b><small>${esc(t[1])} · ${esc(t[2])}</small></div></div>`).join('')}</div><div class="mini" id="mini">${S.playing?(S.playing.link?`正在播放：${esc(S.playing.name)} <a href="${S.playing.link}" target="_blank">前往播放页</a>`:'▶︎ '+S.playing.name):'未播放'}</div>`;
+}
+/* ============================================================
+   事件表
+   ============================================================ */
+const A={
+ pinpage:()=>pinPage(),
+ pk:v=>pinKey(v),
+ pdel:()=>{pinBuf=pinBuf.slice(0,-1);[...document.querySelectorAll('#dots i')].forEach((e,i)=>e.classList.toggle('f',i<pinBuf.length));},
+ lock:()=>lockScreen(),
+ home:()=>{
+  if(S.call){S.call=null;}
+  const inc=document.getElementById('inc');if(inc)inc.remove();
+  home();
+ },
+ open:v=>open(v),
+ kakao:()=>kakaoList(),
+ chat:v=>chatPage(v),
+ live:()=>live(),
+ choice:v=>handleChoice(v),
+ ptab:v=>phoneApp(v),
+ call:v=>{startCall(v);},
+ cend:()=>endCall(true),
+ cadd:()=>{S.call=null;phoneApp('con');},
+ cfx:v=>toast(v+' 已切换'),
+ kdial:v=>{
+  kbuf+=v;
+  const kd=$('#kd');if(kd)kd.textContent=kbuf;
+  if(kbuf==='0626'&&fired('call_bday')){
+   kbuf='';if(kd)kd.innerHTML='&nbsp;';
+   toast('拨通了金正洙的电话');
+   startCall('js',true,[[500,'js','어？智硕啊？'],[2000,'js','你怎么突然打来了……'],[2400,'js','我还以为你不想理我了。'],[2000,'js','你吃饭了吗？']]);
+  }
+ },
+ kcall:()=>{
+  if(!kbuf){toast('请输入号码');return;}
+  if(kbuf==='0626'){kbuf='';startCall('js',true);return;}
+  toast('这个号码不在通讯录里');
+  kbuf='';const kd=$('#kd');if(kd)kd.innerHTML='&nbsp;';
+ },
+ vm:()=>{
+  const v=$('#vmx');if(!v)return;
+  v.classList.toggle('show');
+  v.innerHTML='<p>“……智硕啊。你应该睡了。我只是想说…算了。明天见。”<br><small>语音信箱转文字 · 正洙</small></p>';
+  if(fired('vm')){S.incKey='vm';TRIGGERS.call_vm=1;setTimeout(()=>incoming('js','vm'),3000);}
+ },
+ note:v=>noteOpen(v),
+ notes:()=>notesApp(),
+ nk:(v,el)=>noteKey(v,el.dataset.n),
+ swig:()=>{S.ign=S.ign==='main'?'alt':'main';S.igTab='home';igApp();toast('已切换到 '+(S.ign==='alt'?IGALT.u:IGMAIN.u));},
+ igt:v=>{S.igTab=v;igApp();},
+ like:v=>{S.liked[v]=!S.liked[v];igApp();},
+ dm:v=>{S.dm=+v;S.igTab='dmv';igApp();},
+ story:()=>storyView(),
+ sclose:()=>{const el=$('.sov');if(el)el.remove();},
+ xtab:v=>xApp(v),
+ xlike:v=>{S.liked['x'+v]=!S.liked['x'+v];xApp('tl');},
+ xpost:v=>{
+  if(!S.xBombTriggered){
+   S.xBombTriggered=true;
+   toast('你盯着那条帖子看了很久');
+   setTimeout(()=>{
+    const js=chat('js');
+    pushMsg(js,{w:'js',t:fmt(S.clock),x:'你别看那些帖子了。'});
+    pushMsg(js,{w:'js',t:fmt(S.clock),x:'他们说什么都不重要。'});
+    pushMsg(js,{w:'js',t:fmt(S.clock),x:'我只想知道 你怎么想。'});
+    pushMsg(js,{w:'js',t:fmt(S.clock),x:'……算了 你不想说就不说。'});
+    toast('金正洙发来了消息');
+    TRIGGERS.call_x=1;
+   },800);
+  }
+ },
+ photos:()=>photosApp(),
+ photo:v=>photoView(+v),
+ video:v=>{const idx=PHOTOS.findIndex(p=>p[0].includes(v));if(idx>=0)photoView(idx);},
+ mail:()=>mailApp(),
+ mailv:v=>mailView(+v),
+ cday:v=>{S.calSel=v;calApp();},
+ cprev:()=>{S.calM--;if(S.calM<0){S.calM=11;S.calY--;}calApp();},
+ cnext:()=>{S.calM++;if(S.calM>11){S.calM=0;S.calY++;}calApp();},
+ play:v=>{
+  const t=TRACKS[v];if(!t)return;
+  S.playing={name:t[0],link:t[3]};
+  const mi=$('#mini');
+  if(mi)mi.innerHTML=S.playing.link?`正在播放：${esc(t[0])} <a href="${t[3]}" target="_blank">前往播放页</a>`:'▶︎ '+t[0];
+  if(t[0].includes('窗边的人')&&fired('privateDemo'))toast('这首是正洙的私人 demo · 仅自己可见');
+ },
+ idecline:()=>{
+  const inc=$('#inc');if(inc)inc.remove();
+  const reactions=REJECT_REACTIONS[S.rejectIndex%REJECT_REACTIONS.length];
+  S.rejectIndex++;
+  if((S.incKey==='confession'||S.incKey==='vm')&&!S.confessionRejected){
+   S.confessionRejected=true;
+   chatPage('js');
+   setTimeout(()=>{pushMsg(chat('js'),{w:'js',t:fmt(S.clock),x:'我就知道你会挂。'});},1500);
+   setTimeout(()=>{pushMsg(chat('js'),{w:'js',t:fmt(S.clock),x:'但你连一句让我滚的话都不肯说，是不是太残忍了。'});},5000);
+   setTimeout(()=>{pushMsg(chat('js'),{w:'js',t:fmt(S.clock),x:'我现在在你工作室门口。'});},8000);
+   setTimeout(()=>{pushMsg(chat('js'),{w:'js',t:fmt(S.clock),x:'把门打开。'});},11000);
+   setTimeout(()=>{pushMsg(chat('js'),{w:'js',t:fmt(S.clock),x:'你今天如果不出来把话说清楚，我就在这站一晚上。'});},15000);
+   setTimeout(()=>{startBomb();},16000);
+  }else{
+   RECENTS.unshift({id:'js',dir:'miss',t:fmt(S.clock),n:1});
+   S.missed++;
+   chatPage('js');
+   let delay=1000;
+   reactions.forEach(([w,x])=>{
+    setTimeout(()=>{pushMsg(chat('js'),{w,t:fmt(S.clock),x});},delay);
+    delay+=2200;
+   });
+  }
+ },
+ iaccept:()=>{
+  const key=S.incKey||'confession';
+  const inc=$('#inc');if(inc)inc.remove();
+  if((key==='confession'||key==='vm')&&!S.confessionAccepted){
+   S.confessionAccepted=true;
+   startCall('js',true,JS_CONFESSION);
+  }else{
+   startCall('js',true,JS_CALLS[key]||JS_CALL);
+  }
+ }
+};
+/* ============================================================
+   全局点击
+   ============================================================ */
+document.addEventListener('click',e=>{
+ const homeBar=e.target.closest('.bar-home');
+ if(homeBar){
+  if(S.unlocked&&!S.call)home();
+  else if(!S.unlocked)lockScreen();
+  else if(S.call){S.call=null;phoneApp('rec');}
+  return;
+ }
+ const el=e.target.closest('[data-a]');
+ if(!el)return;
+ const f=A[el.dataset.a];
+ if(f)f(el.dataset.v,el);
+});
+/* ============================================================
+   启动
+   ============================================================ */
+lockScreen();
+tickUI();
+</script>
+</body>
+</html>
